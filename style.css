@@ -1,0 +1,134 @@
+     #start {
+         margin-top: 20px;
+         text-align: center;
+     }
+     
+     #highLow,
+     #score {
+         display: none;
+     }
+     
+     #cards {
+         margin-top: 30px;
+         height: 240px;
+         margin-left: 30px;
+     }
+     
+     .icard {
+         padding: 10px;
+         height: 200px;
+         width: 150px;
+         border: 1px solid black;
+         border-radius: 14px;
+         background-color: white;
+         position: absolute;
+         display: inline-block;
+         left: 30px;
+     }
+ 
+     .icardBack {
+         padding: 10px;
+         height: 200px;
+         width: 150px;
+         border: 1px solid black;
+         border-radius: 14px;
+         background-color: black;
+         position: absolute;
+         display: inline-block;
+         left: 30px;
+     }
+
+
+     .wands .suit::after {
+         content: '\2624';
+     }
+     
+     .swords .suit::after {
+         content: '\2020';
+     }
+     
+     .cups .suit::after {
+         content: '\2615';
+     }
+     
+     .pents .suit::after {
+         content: '\272A';
+     }
+
+     
+     .wands,
+     .swords,
+     .cups,
+     .pents,{
+         color: black;
+     }
+     
+     .arcana {
+         color: red;
+     }
+     
+     .cardtop {
+         font-size: 1em;
+         top: 5px;
+         left: 5px;
+         position: absolute;
+         line-height: 0.7em;
+     }
+     
+     .cardmid {
+         text-align: center;
+         font-size: 1em;
+         position: absolute;
+         top: 20px;
+         left: 40px;
+     }
+     
+     .cardbottom {
+         line-height: 0.7em;
+         font-size: 1em;
+         transform: rotate(-180deg);
+         -webkit-transform: rotate(-180deg);
+         -moz-transform: rotate(-180deg);
+         -ms-transform: rotate(-180deg);
+         -o-transform: rotate(-180deg);
+         bottom: 5px;
+         right: 5px;
+         position: absolute;
+     }
+     
+     .btn {
+         border-radius: 5px;
+         padding: 9px 20px;
+         color: white;
+         display: inline-block;
+         text-align: center;
+         text-shadow: 1px 1px #000000;
+     }
+     
+     #btnstart {
+         background-color: black;
+     }
+     
+     #btnhigh {
+         background-color: red;
+     }
+     
+     #btnlow {
+         background-color: blue;
+     }
+     
+     #dollars {
+         font-size: 2.5em;
+     }
+     
+     #message {
+         text-align: center;
+     }
+
+    .rotate180 {
+      -webkit-transform:rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
+      transform: rotate(180deg);
+    }
