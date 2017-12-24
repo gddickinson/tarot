@@ -33,6 +33,13 @@
          border: 1px solid black;
          border-radius: 14px;
          background-color: black;
+         background: repeating-linear-gradient(
+            45deg,
+            #606dbc,
+            #606dbc 10px,
+            #465298 10px,
+            #465298 20px
+            );
          position: absolute;
          display: inline-block;
          left: 30px;
@@ -132,3 +139,4 @@
       -o-transform: rotate(180deg);
       transform: rotate(180deg);
     }
+
