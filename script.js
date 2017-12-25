@@ -28,7 +28,7 @@
           count++;
           cardOutput.innerHTML += showCard();
           message.innerHTML = "Card drawn: "+cards[count].num+" "+cards[count].suit;
-          if (count > 0) {
+          if (count > 3) {
               endPlay();
           }
       }
@@ -51,7 +51,7 @@
 
       function showCard() {
           var c = cards[count];
-          var hpos = (count > 0) ? count * 80 + 30 : 30;
+          var hpos = (count > 0) ? count * 10 + 200 : 30;
           var imageName = "";
           var firstPart = "";
           var secondPart = "";
