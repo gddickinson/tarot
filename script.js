@@ -15,6 +15,7 @@
         choice = elem.selectedIndex;
         if (choice == 0){deckChoice = "Rider_Waite";}
         if (choice == 1){deckChoice = "Marseilles";} 
+        if (choice == 2){deckChoice = "Colman-Smith";}   
         }
     
       function gameStart() {
