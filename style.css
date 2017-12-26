@@ -14,15 +14,20 @@
          margin-left: 30px;
      }
 
-    h1{ height: 70px;
+    h1{ height: 90px;
         text-align: center;
         text-shadow: 5px 5px #558ABB;
-        color:rebeccapurple;
+        font-size: 60px;
+        font-family: fantasy;
+        color:black;
         background-color:#def;
         background-image: radial-gradient(closest-side, transparent 98%, rgba(0,0,0,.3) 99%),
         radial-gradient(closest-side, transparent 98%, rgba(0,0,0,.3) 99%);
         background-size:40px 80px;
         background-position:0 0, 20px 30px;
+        animation-name: headerChange;
+        animation-duration: 60s;
+        animation-iteration-count: infinite;
 
      }
      
@@ -160,3 +165,8 @@
       transform: rotate(180deg);
     }
 
+    @keyframes headerChange {
+        0% {background-size:5px 5px;}
+        50% {background-size:100px 80px; background-color: firebrick;}
+        100% {background-size:5px 5px;}
+    }

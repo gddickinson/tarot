@@ -19,7 +19,15 @@
             <button id="btnstart" type="button" onclick="gameStart()" class="btn">Shuffle Deck</button>
         </div>
     </div>
-    <script src="script.js"></script>
+    <form id="deck">
+        Select your favorite deck:
+        <select id="mySelect" onChange="check(this);">
+            <option>Rider_Waite</option>
+            <option>Marseilles</option>
+        </select>
+        <br><br>
+    </form>
+        <script src="script.js"></script>
 </body>
 
 </html>

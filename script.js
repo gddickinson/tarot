@@ -1,3 +1,4 @@
+      var deckChoice = "Rider_Waite"
       var count = 0;
       var firstRun = true;
       var firstCard = true;
@@ -8,7 +9,14 @@
       var cards = [];
       var cardOutput = document.getElementById('cards');
       var message = document.getElementById('message');
+      var choice = "Rider_Waite"
 
+      function check(elem) {
+        choice = elem.selectedIndex;
+        if (choice == 0){deckChoice = "Rider_Waite";}
+        if (choice == 1){deckChoice = "Marseilles";} 
+        }
+    
       function gameStart() {
           firstCard = true;
           count = 0;
@@ -16,6 +24,7 @@
           document.getElementById('cards').innerHTML = "";
           document.getElementById('start').style.display = 'none';
           document.getElementById('highLow').style.display = 'block';
+          document.getElementById('deck').style.display = 'none';
           if (firstRun) {
               buildCards();
               firstRun = false;
@@ -37,6 +46,7 @@
           document.getElementById('highLow').style.display = 'none';
           //message.innerHTML = "Reading Finished.";
           document.getElementById('start').style.display = 'block';
+          document.getElementById('deck').style.display = 'block';
       }
 
       function shuffleArray(array) {
@@ -66,7 +76,7 @@
           firstPart = (c.suit.slice(0,2).toLowerCase());
           secondPart = (c.cardValue);          
           if (secondPart < 10){secondPart = "0"+secondPart;}         
-          imageName = 'RW_tarot\\'+firstPart+secondPart+".jpg";
+          imageName = deckChoice+"\\"+firstPart+secondPart+".jpg";
           
           //test for inversion
           if (Math.random() < 0.5){
@@ -74,6 +84,7 @@
           }
           
           console.log(inverted)
+          console.log(choice)
           
           if (inverted){
             return '<div class="icard ' + c.suit + '" style="left:' + hpos + 'px;"> <div class="cardtop suit">' + c.num + '<br></div> <div class="cardmid"><img src="' + imageName + '" width="100" height="173" class="rotate180"></div> <div class="cardbottom suit">' + c.num + '<br></div></div>';
