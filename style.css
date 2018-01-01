@@ -40,7 +40,7 @@
          padding: 10px;
          height: 200px;
          width: 150px;
-         border: 1px solid black;
+         border: 1px double black;
          border-radius: 14px;
          background-color: white;
          position: absolute;
@@ -48,7 +48,7 @@
          left: 30px;
      }
  
-     .icardBack {
+     .icardBack1 {
          padding: 10px;
          height: 200px;
          width: 150px;
@@ -58,23 +58,61 @@
          display: inline-block;
          left: 30px;
          background:
-            linear-gradient(324deg, #232927 4%,   transparent 4%) -70px 43px,
-             linear-gradient( 36deg, #232927 4%,   transparent 4%) 30px 43px,
-             linear-gradient( 72deg, #e3d7bf 8.5%, transparent 8.5%) 30px 43px,
-             linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -70px 43px,
-             linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -70px 23px,
-             linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 30px 23px,
+             
+            linear-gradient(324deg, red 4%,   transparent 4%) -64px 47px,
+             linear-gradient( 36deg, red 4%,   transparent 4%) 36px 47px,
+             linear-gradient( 72deg, #e3d7bf 8.5%, transparent 8.5%) 36px 47px,
+             linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -64px 47px,
+             linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -64px 27px,
+             linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 36px 27px,
 
-            linear-gradient(324deg, #232927 4%,   transparent 4%) -20px 93px,
-             linear-gradient( 36deg, #232927 4%,   transparent 4%) 80px 93px,
-             linear-gradient( 72deg, #e3d7bf 8.5%, transparent 8.5%) 80px 93px,
-             linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -20px 93px,
-             linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -20px 73px,
-             linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 80px 73px;
-         background-color: #232927;
+            linear-gradient(324deg, red 4%,   transparent 3%) -14px 97px,
+             linear-gradient( 36deg, red 4%,   transparent 3%) 86px 97px,
+             linear-gradient( 72deg, #e3d7bf 8.5%, transparent 8.5%) 86px 97px,
+             linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -14px 97px,
+             linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -14px 77px,
+             linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 86px 77px;
+         background-color: red;
          background-size: 100px 100px;
      }
 
+     .icardBack2 {
+         padding: 10px;
+         height: 200px;
+         width: 150px;
+         border: 1px solid black;
+         border-radius: 14px;
+         position: absolute;
+         display: inline-block;
+         left: 30px;
+         background-color: black;
+         background-image:
+         radial-gradient(white, rgba(155,255,255,.2) 2px, transparent 40px),
+         radial-gradient(white, rgba(155,255,255,.15) 1px, transparent 30px),
+         radial-gradient(white, rgba(255,155,255,.1) 2px, transparent 40px),
+         radial-gradient(rgba(255,155,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+         background-size: 110px 110px, 30px 30px, 150px 150px, 10px 10px; 
+
+     }
+
+     .icardBack0 {
+         padding: 10px;
+         height: 200px;
+         width: 150px;
+         border: 1px solid black;
+         border-radius: 14px;
+         position: absolute;
+         display: inline-block;
+         left: 30px;
+         background: #36c;
+         background: 
+             linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+             linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+             linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+             linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+             #36c;
+         background-size: 15px 30px
+     }
 
      .wands .suit::after {
          content: '\2624';

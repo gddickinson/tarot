@@ -9,7 +9,7 @@
       var cards = [];
       var cardOutput = document.getElementById('cards');
       var message = document.getElementById('message');
-      var choice = "Rider_Waite"
+      var choice = "0"
 
       function check(elem) {
         choice = elem.selectedIndex;
@@ -33,6 +33,11 @@
           shuffleArray(cards);
           cardOutput.innerHTML += showCard();
       }
+
+    function displayStack(){
+        
+    }
+
 
       function drawCard() {
           count++;
@@ -67,10 +72,11 @@
           var firstPart = "";
           var secondPart = "";
           var inverted = false;
+          var deckBack = choice + " "
           
           if (firstCard){
               firstCard = false;
-              return '<div class="icardBack ' + c.suit + '" style="left:' + hpos + 'px;"></div>';
+              return '<div class="icardBack' + deckBack + c.suit + '" style="left:' + hpos + 'px;"></div>';
           }
           
           //generate filename for card
@@ -123,15 +129,3 @@
 
           }
       }
-
-/*        //image display function - not used
-        function show_image(src, width, height, alt) {
-            var img = document.createElement("img");
-            img.src = src;
-            img.width = width;
-            img.height = height;
-            img.alt = alt;
-
-            // This next line will just add it to the <body> tag
-            document.body.appendChild(img);
-        }*/
