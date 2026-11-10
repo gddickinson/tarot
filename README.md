@@ -118,7 +118,7 @@ Contributions to the Tarot Reading application are welcome! Feel free to submit 
 
 ## License
 
-This project is available under an open source license.
+Released under the [MIT licence](LICENSE).
 
 ## Credits
 
