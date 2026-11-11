@@ -81,7 +81,12 @@
           
           //generate filename for card
           firstPart = (c.suit.slice(0,2).toLowerCase());
-          secondPart = (c.cardValue);          
+          secondPart = (c.cardValue);
+          // The names follow the Marseilles order (8 Justice, 11 Strength); the Rider-Waite and
+          // Colman-Smith pictures use Waite's order (8 Strength, 11 Justice).
+          if (c.suit == "arcana" && deckChoice != "Marseilles" && (secondPart == 8 || secondPart == 11)) {
+              secondPart = 19 - secondPart;
+          }
           if (secondPart < 10){secondPart = "0"+secondPart;}         
           imageName = deckChoice+"/"+firstPart+secondPart+".jpg";
           
