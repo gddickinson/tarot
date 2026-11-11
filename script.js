@@ -83,7 +83,7 @@
           firstPart = (c.suit.slice(0,2).toLowerCase());
           secondPart = (c.cardValue);          
           if (secondPart < 10){secondPart = "0"+secondPart;}         
-          imageName = deckChoice+"\\"+firstPart+secondPart+".jpg";
+          imageName = deckChoice+"/"+firstPart+secondPart+".jpg";
           
           //test for inversion
           if (Math.random() < 0.5){
