@@ -1,124 +1,104 @@
 # Tarot Reading
 
-A web-based tarot card reading application with multiple deck options and card interpretations.
+A tarot card reading webpage with three decks, four spreads, animated shuffling and dealing, an encyclopedia
+of all 78 cards with A. E. Waite's 1910 meanings, and a reading journal. For entertainment.
 
 ## Live Demo
 
-Experience it now: [https://gddickinson.github.io/tarot/](https://gddickinson.github.io/tarot/)
+Try it: [https://gddickinson.github.io/tarot/](https://gddickinson.github.io/tarot/)
+
+![Home page](docs/img/home.jpg)
 
 ## Features
 
-This Tarot Reading web application offers:
+- **Three decks**: Rider-Waite, Marseilles and Colman-Smith, each with its own card back (the three CSS designs of
+  the original page).
+- **Four spreads**: a single card; three cards (past, present, future); the original page's four-card draw; and the
+  Celtic Cross exactly as Waite lays it out in *The Pictorial Key to the Tarot*, with an optional Significator.
+- **At the table**: an animated riffle shuffle, a cut wherever you choose (or "let the cards decide"), cards dealt
+  across the table, and a 3D flip as each card is turned over. Animations are switched off when the system asks for
+  reduced motion.
+- **Reversed cards**: each card has an even chance of landing upside down (as in the original page); this can be
+  switched off.
+- **Meanings**: for every card, upright and reversed, quoted from Waite (1910), plus his "additional meanings" and,
+  when two or more cards of a rank turn up, his table of "the recurrence of cards in dealing".
+- **Shareable readings**: the shuffle is seeded, so "Copy link" gives a link that deals the same cards again.
+- **Card encyclopedia**: all 78 cards, filtered by major/minor arcana or suit, searchable by name and meaning; each
+  card's page shows it in all three decks with Waite's description of the picture.
+- **Card of the day**: one card per date, the same for every visitor.
+- **Reading journal**: save readings with your question and notes in the browser (localStorage); export as JSON or
+  Markdown and import a JSON export elsewhere. Nothing is sent anywhere.
 
-- Three classic tarot deck designs to choose from:
-  - Rider-Waite
-  - Marseilles
-  - Colman-Smith
-- Intuitive card drawing interface
-- Random card orientation (upright or inverted)
-- Beautifully designed card backs unique to each deck
-- Animated and visually appealing interface
-- Four-card reading spread
+![A Celtic Cross reading](docs/img/reading_celtic.jpg)
 
 ## How to Use
 
-### Getting Started
+1. Open **Read**, choose a deck and a spread (and, if you like, a question or a Significator).
+2. Press **Shuffle deck**, then **Cut** (the slider chooses where) and **Deal**.
+3. Press each card to turn it over, or **Reveal all**. The meanings appear below the table.
+4. **Save to journal** keeps the reading; **Copy link** shares it; **New reading** starts again.
 
-1. **Select a Deck**: Choose your preferred tarot deck style from the dropdown menu
-2. **Shuffle Deck**: Click the "Shuffle Deck" button to begin your reading
-3. **Draw Cards**: Click the red "Draw" button to reveal each card in your reading
-4. **Interpret**: Read the card names and meanings as they appear
-5. **New Reading**: Once complete, you can start a new reading with the same or a different deck
+The **Cards** page lists all 78 cards; press one for its pictures and meanings (press the big card to see it reversed;
+the arrow keys go to the previous and next card).
 
-### Card Interpretation
+![The card encyclopedia](docs/img/cards.jpg)
 
-The application displays:
-- The card's name (e.g., "The Fool", "Queen of Cups")
-- The card's suit (Major Arcana, Wands, Pentacles, Cups, or Swords)
-- The card's orientation (upright or inverted)
+## Running it locally
 
-## Technical Details
+It is a static site (HTML, CSS and plain ES modules; no build step, no server code). Serve the folder with any web
+server, for example:
 
-### Deck Structure
+```
+python3 -m http.server 8000
+# then open http://127.0.0.1:8000/
+```
 
-The application includes all 78 cards of a traditional tarot deck:
-- 22 Major Arcana cards (from The Fool to The World)
-- 56 Minor Arcana cards across four suits:
-  - Wands (associated with creativity and passion)
-  - Pentacles (associated with material aspects and wealth)
-  - Cups (associated with emotions and relationships)
-  - Swords (associated with intellect and conflict)
+Opening `index.html` directly from disk does not work, because browsers block ES modules on `file://` pages. GitHub
+Pages serves the `master` branch root as it is.
 
-Each Minor Arcana suit contains:
-- Number cards (Ace through 10)
-- Court cards (Page, Knight, Queen, King)
+## Tests
 
-### Card Display
+```
+node --test tests/*.test.mjs        # deck, seeded shuffle, cut, spreads, reversals, share links, Waite data, journal
+python tests/smoke_test.py          # Playwright: every page without console errors, no overflow at 390 px,
+                                    # a full Celtic Cross reading, journal save/export, share link
+```
 
-Each card features:
-- A top label with the card name
-- A visual representation of the card from the selected deck
-- A bottom label (inverted when the card is drawn reversed)
-- Custom styling based on the card's suit
-
-### Design Elements
-
-The application incorporates:
-- Animated background in the header
-- Custom-designed card backs for each deck option
-- Card rotation for inverted readings
-- Visual arrangement of cards in a linear spread
-- Responsive design elements
+The smoke test needs `pip install playwright` and a Chromium (`playwright install chromium`, or an installed Chrome).
 
 ## Project Structure
 
 ```
 tarot/
-├── index.html          # Main HTML document
-├── style.css           # CSS styling and animations
-├── script.js           # JavaScript functionality
-├── README.md           # Project documentation
-└── [Deck Folders]/     # Card image directories
-    ├── Rider_Waite/    # Rider-Waite deck images
-    ├── Marseilles/     # Marseilles deck images
-    └── Colman-Smith/   # Colman-Smith deck images
+├── index.html              # the page shell (header, nav, footer)
+├── static/
+│   ├── style.css, core.js  # shared dark theme and hash router (unchanged web kit files)
+│   ├── style_app.css       # tarot palette, cards, 3D flip, table and spread layouts
+│   ├── main.js             # page registration and starry background
+│   ├── engine.js           # pure logic: deck, decks, seeded shuffle/cut/deal, spreads, recurrences, share links
+│   ├── journal_model.js    # pure logic: journal entries, JSON (de)serialisation, Markdown export
+│   ├── waite_pkt.js        # Waite's texts (generated by tools/extract_waite.py)
+│   ├── widgets.js, anim.js # card elements, storage, animations
+│   └── home.js, read.js, cards.js, journal_page.js, about.js   # one module per page
+├── Rider_Waite/, Marseilles/, Colman-Smith/   # card images (78 each)
+├── tools/extract_waite.py  # rebuilds static/waite_pkt.js from Wikisource
+├── tests/                  # node tests and the Playwright smoke test
+└── docs/img/               # screenshots
 ```
 
-## Code Implementation
+See `INTERFACE.md` for a module-by-module map.
 
-The application uses:
-- Vanilla JavaScript for card logic and interactions
-- CSS for styling and animations
-- Dynamic image loading based on deck selection
-- Array manipulation for deck shuffling
-- Random number generation for card inversion
-- DOM manipulation for displaying cards and messages
+## Sources and licences
 
-## Browser Compatibility
-
-This application works best in modern browsers that support:
-- CSS animations and transforms
-- ES6 JavaScript features
-- Modern CSS styling properties
-
-## Future Enhancements
-
-Potential improvements for future versions:
-- Card meaning interpretations
-- Additional deck options
-- Different spread layouts (Celtic Cross, Three-Card, etc.)
-- Save and share reading results
-- Detailed card descriptions and history
-- Search functionality for specific cards
-- Custom background options
-
-## Contributing
-
-Contributions to the Tarot Reading application are welcome! Feel free to submit pull requests or open issues with suggestions for improvements.
+The card meanings and descriptions are quoted from A. E. Waite, *The Pictorial Key to the Tarot* (1910), public
+domain in the US, via [Wikisource](https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot). The Rider-Waite
+pictures are Pamela Colman Smith's 1909 designs (public domain in the US). Where the Marseilles and Colman-Smith image
+files came from is not recorded; see [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## License
 
-Released under the [MIT licence](LICENSE).
+The code is released under the [MIT licence](LICENSE). The card images and Waite's texts are not covered by it; see
+[THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## Credits
 

@@ -1,34 +1,28 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Tarot Reading</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarot Reading</title>
+<meta name="description" content="A tarot card reading webpage: three decks, four spreads with shuffle, cut, deal and flip animations, reversed cards, an encyclopedia of all 78 cards with Waite's 1910 meanings, and a reading journal. For entertainment.">
+<link rel="icon" href="static/icon.svg">
+<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="static/style_app.css">
 </head>
-
 <body>
-    <div class="container">
-        <h1>Tarot Reading</h1>
-        <div id="message">Time to choose a card.</div>
-        <div id="cards"></div>
-        <div id="highLow">
-            <button id="btnhigh" type="button" onclick="drawCard()" class="btn">Draw</button>
-        </div>
-        <div id="start">
-            <button id="btnstart" type="button" onclick="gameStart()" class="btn">Shuffle Deck</button>
-        </div>
-    </div>
-    <form id="deck">
-        Select your favorite deck:
-        <select id="mySelect" onChange="check(this);">
-            <option>Rider_Waite</option>
-            <option>Marseilles</option>
-            <option>Colman-Smith</option>
-        </select>
-        <br><br>
-    </form>
-        <script src="script.js"></script>
+<canvas id="bg" aria-hidden="true"></canvas>
+<header class="top">
+  <a class="brand" href="#/"><span class="mark"></span>Tarot Reading</a>
+  <nav class="groups" aria-label="Main">
+    <a href="#/read" data-nav="read">Read</a>
+    <a href="#/cards" data-nav="cards">Cards</a>
+    <a href="#/journal" data-nav="journal">Journal</a>
+    <a href="#/about" data-nav="about">About</a>
+  </nav>
+  <div class="right"><a class="small mute" href="https://github.com/gddickinson/tarot" target="_blank" rel="noopener">GitHub</a></div>
+</header>
+<main id="app" tabindex="-1"><noscript><p>This page needs JavaScript.</p></noscript></main>
+<footer class="foot">Tarot Reading · <a href="https://github.com/gddickinson/tarot">source on GitHub</a> · <span id="mode"></span></footer>
+<script type="module" src="static/main.js"></script>
 </body>
-
 </html>
