@@ -1,4 +1,4 @@
-// Pure tarot logic (no DOM): the 78-card deck, the three image decks, seeded shuffle/cut/deal,
+// Pure tarot logic (no DOM): the 78-card deck, the card pictures, seeded shuffle/cut/deal,
 // reversals, spreads and Waite's "recurrence of cards". Imported by the pages and by engine.test.mjs.
 import { rng } from './core.js';
 import { CELTIC_POSITIONS, RECURRENCE } from './waite_pkt.js';
@@ -37,27 +37,17 @@ export const CARDS = buildDeck();
 export const CARD = Object.fromEntries(CARDS.map(c => [c.id, c]));
 export const suitOf = card => SUITS.find(s => s.key === card.suit) || null;
 
-// Image decks in the repo. The Marseilles pictures keep the older order (VIII Justice, XI Strength).
-export const DECKS = [
-  { id: 'rider', label: 'Rider-Waite', dir: 'Rider_Waite', back: 0 },
-  { id: 'marseilles', label: 'Marseilles', dir: 'Marseilles', back: 1, swap: { 8: 11, 11: 8 } },
-  { id: 'colman', label: 'Colman-Smith', dir: 'Colman-Smith', back: 2 },
-];
+// The pictures: one original deck, cards/<id>.svg and cards/back.svg (made by tools/make_deck.mjs). Kept as a
+// list so journal entries and links from the earlier three-deck site (deck=rider etc.) still resolve.
+export const DECKS = [{ id: 'night', label: 'Night', dir: 'cards', back: 0 }];
 export const deckById = id => DECKS.find(d => d.id === id) || DECKS[0];
 
 export function imageFile(deck, card) {
-  const d = typeof deck === 'string' ? deckById(deck) : deck;
+  const d = typeof deck === 'string' ? deckById(deck) : deck || DECKS[0];
   const c = typeof card === 'string' ? CARD[card] : card;
-  let id = c.id;
-  if (c.arcana === 'major' && d.swap && d.swap[c.number] !== undefined) id = 'ar' + pad(d.swap[c.number]);
-  return `${d.dir}/${id}.jpg`;
+  return `${d.dir}/${c.id}.svg`;
 }
-// The number printed on the picture of a major arcanum in a given deck.
-export function printedNumber(deck, card) {
-  const d = typeof deck === 'string' ? deckById(deck) : deck;
-  const n = d.swap && d.swap[card.number] !== undefined ? d.swap[card.number] : card.number;
-  return ROMAN[n];
-}
+export const BACK_FILE = 'cards/back.svg';
 
 // --- shuffling and dealing ---------------------------------------------------------------
 // FNV-1a: turns any text (a date, a question) into a 32-bit seed.

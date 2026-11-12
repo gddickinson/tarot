@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { buildDeck } from '../tools/make_deck.mjs';
+import { buildDeck, descModule } from '../tools/make_deck.mjs';
 import { CARDS } from '../static/engine.js';
 
 const dir = new URL('../cards/', import.meta.url);
@@ -46,6 +46,7 @@ test('the generator is deterministic and the files are up to date', () => {
   const a = buildDeck(), b = buildDeck();
   assert.deepEqual(a, b);
   for (const id of ids) assert.equal(read(id), a[id], `${id} differs: run node tools/make_deck.mjs`);
+  assert.equal(readFileSync(new URL('../static/deck_desc.js', import.meta.url), 'utf8'), descModule(a));
 });
 
 test('every card is different (art and description)', () => {

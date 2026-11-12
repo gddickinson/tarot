@@ -4,7 +4,7 @@ import { CARD, SPREADS, deckById } from './engine.js';
 export const JOURNAL_FORMAT = 'tarot-journal';
 export const JOURNAL_VERSION = 1;
 
-export function makeEntry(reading, { deck = 'rider', question = '', note = '', date = new Date() } = {}) {
+export function makeEntry(reading, { deck = 'night', question = '', note = '', date = new Date() } = {}) {
   const iso = (date instanceof Date ? date : new Date(date)).toISOString();
   return {
     id: `${iso.replace(/\D/g, '').slice(0, 14)}-${reading.seed.toString(36)}`,

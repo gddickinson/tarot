@@ -6,12 +6,12 @@ import { makeEntry, serialiseJournal, parseJournal, mergeJournals, journalToMark
   JOURNAL_FORMAT } from '../static/journal_model.js';
 
 const r = drawReading({ seed: 99, spread: 'three' });
-const e1 = makeEntry(r, { deck: 'colman', question: 'What next?', note: 'fun', date: '2026-01-02T03:04:05Z' });
+const e1 = makeEntry(r, { deck: 'night', question: 'What next?', note: 'fun', date: '2026-01-02T03:04:05Z' });
 const e2 = makeEntry(drawReading({ seed: 5, spread: 'celtic', significator: 'pe13' }),
   { date: '2026-02-01T00:00:00Z' });
 
 test('makeEntry keeps the reading and metadata', () => {
-  assert.equal(e1.deck, 'colman');
+  assert.equal(e1.deck, 'night');
   assert.equal(e1.spread, 'three');
   assert.equal(e1.seed, 99);
   assert.equal(e1.date, '2026-01-02T03:04:05.000Z');
@@ -39,7 +39,7 @@ test('cleanEntry strips unknown fields and coerces types', () => {
   assert.equal(c.evil, undefined);
   assert.equal(c.seed, 99);
   assert.equal(c.reversals, true);
-  assert.equal(c.deck, 'rider');
+  assert.equal(c.deck, 'night', 'unknown or old deck ids map to the one deck');
 });
 
 test('merge keeps one copy per id', () => {
@@ -52,7 +52,7 @@ test('merge keeps one copy per id', () => {
 test('markdown export lists every card with its position', () => {
   const md = journalToMarkdown([e1]);
   assert.match(md, /^# Tarot reading journal/);
-  assert.match(md, /Three cards \(Colman-Smith\)/);
+  assert.match(md, /Three cards \(Night\)/);
   assert.match(md, /\*\*Question:\*\* What next\?/);
   for (const c of e1.cards) assert.ok(md.includes(`${c.pos}: `));
   assert.ok(md.trimEnd().endsWith('fun'));

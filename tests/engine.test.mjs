@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync } from 'node:fs';
-import { CARDS, CARD, DECKS, SPREADS, buildDeck, imageFile, printedNumber, shuffle, cut, seedFrom,
+import { CARDS, CARD, DECKS, SPREADS, buildDeck, imageFile, shuffle, cut, seedFrom,
   drawReading, recurrences, readingToQuery, queryToReading } from '../static/engine.js';
 import { rng } from '../static/core.js';
 import { WAITE, CELTIC_POSITIONS, RECURRENCE } from '../static/waite_pkt.js';
@@ -23,21 +23,12 @@ test('deck: 78 unique cards, 22 major + 4 suits of 14', () => {
   assert.equal(CARD.sw14.name, 'King of Swords');
 });
 
-test('every card has an image in every deck, with the exact file name', () => {
-  for (const d of DECKS) {
-    const files = new Set(readdirSync(new URL(d.dir + '/', root)));
-    for (const c of CARDS) assert.ok(files.has(imageFile(d, c).split('/')[1]), imageFile(d, c));
-  }
-});
-
-test('Marseilles keeps VIII Justice / XI Strength; the other decks use Waite numbering', () => {
-  assert.equal(imageFile('rider', 'ar08'), 'Rider_Waite/ar08.jpg');
-  assert.equal(imageFile('colman', 'ar11'), 'Colman-Smith/ar11.jpg');
-  assert.equal(imageFile('marseilles', 'ar08'), 'Marseilles/ar11.jpg');
-  assert.equal(imageFile('marseilles', 'ar11'), 'Marseilles/ar08.jpg');
-  assert.equal(imageFile('marseilles', 'ar13'), 'Marseilles/ar13.jpg');
-  assert.equal(printedNumber('marseilles', CARD.ar08), 'XI');
-  assert.equal(printedNumber('rider', CARD.ar08), 'VIII');
+test('every card has its picture, with the exact file name', () => {
+  const files = new Set(readdirSync(new URL('cards/', root)));
+  for (const c of CARDS) assert.ok(files.has(imageFile('night', c).split('/')[1]), imageFile('night', c));
+  assert.equal(imageFile('night', 'ar08'), 'cards/ar08.svg');
+  assert.equal(imageFile('rider', CARD.cu12), 'cards/cu12.svg', 'old deck ids from saved readings still resolve');
+  assert.equal(DECKS.length, 1);
 });
 
 test('seeded shuffle is a reproducible permutation', () => {
@@ -102,8 +93,8 @@ test('reversals: about half the cards, none when switched off', () => {
 
 test('share links reproduce the reading', () => {
   const r = drawReading({ seed: 123456, spread: 'celtic', cutAt: 33, significator: 'cu13' });
-  const q = Object.fromEntries(new URLSearchParams(readingToQuery(r, 'marseilles')));
-  assert.equal(q.deck, 'marseilles');
+  const q = Object.fromEntries(new URLSearchParams(readingToQuery(r, 'night')));
+  assert.equal(q.deck, 'night');
   assert.deepEqual(queryToReading(q), r);
   assert.equal(queryToReading({ spread: 'nope', seed: '1', cut: '1' }), null);
   assert.equal(queryToReading({ spread: 'three', seed: 'x', cut: '1' }), null);

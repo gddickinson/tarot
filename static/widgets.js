@@ -8,8 +8,8 @@ export function cardAlt(card, reversed) {
   return `${card.name}${reversed ? ', reversed' : ''}`;
 }
 
-// A flippable card: <button class="tcard"> with a back (the deck's design) and a face (the picture).
-export function cardEl(id, { deck = 'rider', reversed = false, up = false, label = '', still = false, lazy = false } = {}) {
+// A flippable card: <button class="tcard"> with a back (cards/back.svg) and a face (the picture).
+export function cardEl(id, { deck = 'night', reversed = false, up = false, label = '', still = false, lazy = false } = {}) {
   const c = CARD[id], d = deckById(deck);
   const aria = up ? cardAlt(c, reversed) : `${label ? label + ': ' : ''}face-down card, press to turn over`;
   const tag = still ? 'div' : 'button';
@@ -19,7 +19,7 @@ export function cardEl(id, { deck = 'rider', reversed = false, up = false, label
     <span class="tc-face"><img src="${imageFile(d, c)}" alt="${esc(cardAlt(c, reversed))}"${lazy ? ' loading="lazy"' : ''}></span></span></${tag}>`;
 }
 
-export function thumb(id, deck, { reversed = false, cls = '' } = {}) {
+export function thumb(id, deck = 'night', { reversed = false, cls = '' } = {}) {
   const c = CARD[id];
   return `<img class="${cls}${reversed ? ' rev' : ''}" src="${imageFile(deck, c)}" alt="${esc(cardAlt(c, reversed))}" loading="lazy">`;
 }
@@ -58,7 +58,7 @@ export const journal = {
   remove(id) { return this.save(this.load().filter(e => e.id !== id)); },
 };
 
-// Simple preference store (deck, reversals): same guard.
+// Simple preference store (reversals): same guard.
 export const prefs = {
   get(k, dflt) { try { const v = localStorage.getItem('tarot.' + k); return v === null ? dflt : v; } catch (e) { return dflt; } },
   set(k, v) { try { localStorage.setItem('tarot.' + k, v); } catch (e) { /* storage unavailable */ } },

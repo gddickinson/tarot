@@ -30,31 +30,17 @@ The three-card positions (Past, Present, Future) are the common modern conventio
 
 ## Card pictures
 
-The three image folders were added in December 2017 (commits b5117a2 "initial upload", 9c2feca "add
-decks", e45e45a "add Colman-Smith"). Their source was not recorded in the repository. What could be
-established on 2026-11-11:
+The cards in `cards/` (78 faces and `back.svg`) are original art made for this repository in November 2026: SVG
+drawings produced by `tools/make_deck.mjs` and `tools/deck/*.mjs` from simple shapes, using each card's traditional
+symbols (for example The Star: a kneeling figure pouring water under one large and seven small stars) without tracing
+or copying the compositions of the Rider-Waite-Smith, Marseille or any other deck. They are covered by the
+repository's MIT licence (`LICENSE`), like the code.
 
-### `Rider_Waite/` (78 cards + `thesun.jpg`)
-The pictures are Pamela Colman Smith's designs for the Rider-Waite deck (published by William Rider & Son,
-1909), with the captions of that deck ("THE FOOL.", "KNIGHT of CUPS."). The 1909 deck is in the public domain
-in the United States (published before 1930) and, Smith having died in 1951, in life + 70 countries since
-2022. The file names (`ar00.jpg` ... and the removed duplicates `cuac.jpg`, `cupa.jpg`, `cukn.jpg`,
-`cuqu.jpg`, `cuki.jpg`) follow the naming of the card scans on sacred-texts.com
-(https://sacred-texts.com/tarot/), which publishes its scans as public domain in the US; that is the likely
-origin, but the files could not be compared byte for byte (the site refuses automated downloads), so this is
-not confirmed. A specific scan or restoration can carry its own claims in some countries; none is recorded here.
+`static/deck_desc.js` (what each picture shows) is generated from the same script.
 
-### `Marseilles/` (78 cards)
-A coloured Tarot de Marseille with French captions ("LE MAT", "CAVALIER DE COUPE", "LA FORCE"); the files carry
-Adobe Photoshop 7.0 metadata dated 2005-12-14 and no author or copyright field. **Source and licence not
-established.** The Tarot de Marseille pattern itself is centuries old, but this particular drawing or
-restoration may be a modern work with its own copyright.
-
-### `Colman-Smith/` (78 cards)
-Brightly recoloured versions of the Rider-Waite designs with added captions ("O THE FOOL", "KNIGHT CUPS").
-**Source and licence not established.** The underlying designs are Smith's (public domain as above), but the
-recolouring is a later work whose author and terms are unknown.
-
-## Card backs
-The three card-back patterns (`static/style_app.css`, `.back-0/1/2`) are the CSS gradients of the original
-2017 page.
+### Earlier images (removed)
+From 2017 until November 2026 the site used three scanned decks in `Rider_Waite/`, `Marseilles/` and `Colman-Smith/`
+(see the git history). They were removed and are no longer published. What was known about them: the Rider-Waite
+pictures were Pamela Colman Smith's 1909 designs (public domain in the US), probably from the sacred-texts.com scans
+(file names matched; not byte-verified); the source and licence of the Marseilles and Colman-Smith image sets were
+never established.

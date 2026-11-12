@@ -1,7 +1,7 @@
-// #/read : a reading at the table: choose deck and spread, shuffle, cut, deal, turn the cards over,
+// #/read : a reading at the table: choose a spread, shuffle, cut, deal, turn the cards over,
 // then read Waite's meanings, save to the journal or copy a link that reproduces the reading.
 import { $, $$, esc, route, app, list } from './core.js';
-import { CARD, CARDS, DECKS, SPREADS, SUITS, RANK_PLURAL, deckById, drawReading, randomSeed, recurrences, readingToQuery,
+import { CARD, CARDS, SPREADS, SUITS, RANK_PLURAL, deckById, drawReading, randomSeed, recurrences, readingToQuery,
   queryToReading } from './engine.js';
 import { cardEl, cardTags, meaningHTML, cite, journal, prefs } from './widgets.js';
 import { makeEntry } from './journal_model.js';
@@ -12,7 +12,7 @@ let S = null; // state of the reading on screen
 route('read', async (args, q) => {
   const shared = queryToReading(q);
   S = {
-    deck: deckById(q.deck || prefs.get('deck', 'rider')).id,
+    deck: 'night',
     spread: SPREADS[q.spread] ? q.spread : 'three',
     reversals: q.rev ? q.rev !== '0' : prefs.get('rev', '1') !== '0',
     significator: shared ? shared.significator : null,
@@ -20,10 +20,9 @@ route('read', async (args, q) => {
   };
   app().innerHTML = `
     <div class="hero"><p class="kicker">A reading</p><h1 class="glow">${shared ? 'A shared reading' : 'Time to choose a card'}</h1>
-      <p class="lead">Pick a deck and a spread, shuffle, cut and deal. Tarot here is for entertainment.</p></div>
+      <p class="lead">Pick a spread, shuffle, cut and deal. Tarot here is for entertainment.</p></div>
     <section class="panel" aria-label="Reading options">
       <div class="row">
-        <div><label for="deck">Deck</label><select id="deck">${list(DECKS, d => `<option value="${d.id}">${d.label}</option>`)}</select></div>
         <div><label for="question">Your question (optional)</label><input id="question" maxlength="300" placeholder="What is on your mind?"></div>
       </div>
       <label id="spread-l">Spread</label>
@@ -48,10 +47,8 @@ route('read', async (args, q) => {
       <div id="layout"></div>
     </section>
     <section id="interp" aria-live="polite"></section>`;
-  $('#deck').value = S.deck;
   $('#rev').checked = S.reversals;
   $('#sig').value = S.significator || '';
-  $('#deck').onchange = e => { S.deck = e.target.value; prefs.set('deck', S.deck); redraw(); };
   $('#rev').onchange = e => { S.reversals = e.target.checked; prefs.set('rev', S.reversals ? '1' : '0'); restart(); };
   $('#sig').onchange = e => { S.significator = e.target.value || null; restart(); };
   $('#question').oninput = e => { S.question = e.target.value; };
@@ -67,7 +64,7 @@ function restart() {
 
 function setStatus(t) { $('#status').textContent = t; }
 
-// Re-render the table for the current phase (also after a deck change, keeping the cards).
+// Re-render the table for the current phase.
 function redraw() {
   const sp = SPREADS[S.spread], d = deckById(S.deck);
   $$('#spreads button').forEach(b => { const on = b.dataset.sp === S.spread; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
@@ -181,7 +178,7 @@ function renderInterp() {
         <b class="serif" style="font-size:20px">${CARD[c.id].name}</b>
         <span class="pill ${c.reversed ? 'rev' : 'up'}">${c.reversed ? 'reversed' : 'upright'}</span> ${cardTags(CARD[c.id])}
         ${meaningHTML(c.id, c.reversed)}
-        <a class="small" href="#/card/${c.id}?deck=${S.deck}">More about this card</a></div></div>`).join('')}</div>
+        <a class="small" href="#/card/${c.id}">More about this card</a></div></div>`).join('')}</div>
     ${rec.length ? `<h2>Cards that recur</h2><div class="callout">${rec.map(x => `<p class="quote">${x.count} ${RANK_PLURAL[x.rank]}
       ${x.mode === 'reversed' ? 'reversed' : 'upright'}: <b>${esc(x.meaning)}</b></p>`).join('')}
       <p class="src">From Waite, Part III §5, "The Recurrence of Cards in Dealing" (upright and reversed counted separately).</p></div>` : ''}

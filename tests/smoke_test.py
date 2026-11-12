@@ -14,8 +14,8 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
-ROUTES = ["", "read", "read?spread=celtic", "cards", "cards?f=cups", "card/ar00", "card/sw13?deck=marseilles",
-          "card/ar08?deck=marseilles", "journal", "about", "nonsense"]
+ROUTES = ["", "read", "read?spread=celtic", "cards", "cards?f=cups", "card/ar00", "card/sw13", "card/wa12",
+          "card/ar08?deck=marseilles", "read?spread=three&deck=rider&seed=5&cut=9&rev=1", "journal", "about", "nonsense"]
 
 
 def serve(directory):

@@ -1,6 +1,6 @@
 /* Tarot accent palette (gold, violet, deep teal) and the card table. Shared theme: style.css (unchanged kit). */
 :root { --accent:#f2c14e; --accent2:#b48cff; --accent3:#2ec4b6; --glow:rgba(242,193,78,.14);
-  --cw:120px; --ratio:1.74; --felt:#071a1c; }
+  --cw:120px; --ratio:1.7333; --felt:#071a1c; }
 .brand .mark { border-color:var(--accent); box-shadow:0 0 12px var(--accent), inset 0 0 0 4px var(--bg), inset 0 0 0 9px var(--accent2); }
 h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .hero h1 { font-size:46px; }
@@ -23,23 +23,8 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .tcard:not(.up):hover .tc-back { box-shadow:0 0 0 2px var(--accent2), 0 0 26px rgba(180,140,255,.35); }
 .tcard.static { cursor:default; }
 
-/* Card backs: the three designs of the original page (style.css .icardBack0/1/2), one per deck. */
-.back-0 { background:linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-  linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-  linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-  linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px, #36c; background-size:15px 30px; }
-.back-1 { background:
-  linear-gradient(324deg, red 4%, transparent 4%) -64px 47px, linear-gradient(36deg, red 4%, transparent 4%) 36px 47px,
-  linear-gradient(72deg, #e3d7bf 8.5%, transparent 8.5%) 36px 47px, linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -64px 47px,
-  linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -64px 27px, linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 36px 27px,
-  linear-gradient(324deg, red 4%, transparent 3%) -14px 97px, linear-gradient(36deg, red 4%, transparent 3%) 86px 97px,
-  linear-gradient(72deg, #e3d7bf 8.5%, transparent 8.5%) 86px 97px, linear-gradient(288deg, #e3d7bf 8.5%, transparent 8.5%) -14px 97px,
-  linear-gradient(216deg, #e3d7bf 7.5%, transparent 7.5%) -14px 77px, linear-gradient(144deg, #e3d7bf 7.5%, transparent 7.5%) 86px 77px;
-  background-color:red; background-size:100px 100px; }
-.back-2 { background-color:black; background-image:radial-gradient(white, rgba(155,255,255,.2) 2px, transparent 40px),
-  radial-gradient(white, rgba(155,255,255,.15) 1px, transparent 30px), radial-gradient(white, rgba(255,155,255,.1) 2px, transparent 40px),
-  radial-gradient(rgba(255,155,255,.4), rgba(255,255,255,.1) 2px, transparent 30px); background-size:110px 110px, 30px 30px, 150px 150px, 10px 10px; }
-.tc-back::after { content:""; position:absolute; inset:6px; border:1px solid rgba(255,255,255,.55); border-radius:5px; }
+/* Card back: the generated cards/back.svg (point-symmetric, so it does not give reversals away). */
+.back-0 { background:#070616 url(../cards/back.svg) center / 100% 100% no-repeat; }
 
 /* --- the table ------------------------------------------------------------------------------------- */
 .table { position:relative; margin:16px 0; padding:22px 18px 26px; border-radius:10px; border:1px solid var(--line);
@@ -50,7 +35,6 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .pack { position:relative; width:var(--pw, 96px); height:calc(var(--pw, 96px) * var(--ratio)); }
 .pack .pk { position:absolute; inset:0; border-radius:7px; border:1px solid color-mix(in srgb, var(--accent) 55%, #000);
   box-shadow:0 2px 6px rgba(0,0,0,.5); }
-.pack .pk::after { content:""; position:absolute; inset:5px; border:1px solid rgba(255,255,255,.5); border-radius:4px; }
 .pack-wrap.gone { display:none; }
 [hidden] { display:none !important; }
 .cutrow { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
@@ -95,7 +79,7 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .cardgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:14px; }
 .cg { display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--ink); padding:8px 4px; border-radius:6px; }
 .cg:hover { text-decoration:none; background:color-mix(in srgb, var(--accent) 7%, transparent); }
-.cg img { width:100%; max-width:110px; aspect-ratio:1/1.74; object-fit:contain; background:#0b0d16; border-radius:6px;
+.cg img { width:100%; max-width:110px; aspect-ratio:300/520; object-fit:contain; background:#0b0d16; border-radius:6px;
   border:1px solid var(--line); transition:transform .25s, box-shadow .25s; }
 .cg:hover img { transform:translateY(-4px) rotate(-1.5deg); box-shadow:0 10px 26px rgba(0,0,0,.6), 0 0 18px var(--glow); }
 .cg span { font:13px Georgia, serif; text-align:center; }
@@ -104,10 +88,6 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .filters .q { flex:1; min-width:180px; } .filters .q label { margin-top:0; }
 .detail { display:grid; grid-template-columns:300px 1fr; gap:28px; align-items:start; }
 .detail .big { --cw:260px; }
-.decks3 { display:flex; gap:12px; flex-wrap:wrap; }
-.decks3 a { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:var(--mute); }
-.decks3 img { width:78px; aspect-ratio:1/1.74; object-fit:contain; background:#0b0d16; border-radius:4px; border:1px solid var(--line); }
-.decks3 a.on img { border-color:var(--accent); box-shadow:0 0 12px var(--glow); }
 .pager { display:flex; justify-content:space-between; gap:10px; margin-top:24px; flex-wrap:wrap; }
 
 /* home */
@@ -120,7 +100,7 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 /* journal */
 .jentry .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
 .jentry .thumbs figure { margin:0; width:58px; text-align:center; }
-.jentry .thumbs img { width:58px; aspect-ratio:1/1.74; object-fit:contain; background:#0b0d16; border-radius:4px; border:1px solid var(--line); }
+.jentry .thumbs img { width:58px; aspect-ratio:300/520; object-fit:contain; background:#0b0d16; border-radius:4px; border:1px solid var(--line); }
 .jentry .thumbs img.rev { transform:rotate(180deg); }
 .jentry .thumbs figcaption { font-size:10px; color:var(--mute); line-height:1.25; }
 .jentry h3 { margin-top:0; }
