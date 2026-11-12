@@ -1,0 +1,69 @@
+// Generates the original "Night" tarot deck: cards/<id>.svg for all 78 cards plus cards/back.svg.
+// Deterministic (seeded patterns only), so running it twice gives identical files.
+//   node tools/make_deck.mjs            write the files
+//   node tools/make_deck.mjs --check    exit 1 if any file on disk differs from the generator output
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
+import { C, W, H, ROMAN, card, starPath, f } from './deck/lib.mjs';
+import { MAJOR_A } from './deck/majors1.mjs';
+import { MAJOR_B } from './deck/majors2.mjs';
+import { minor, SUIT_NAMES } from './deck/minors.mjs';
+
+const MAJORS = ['The Fool', 'The Magician', 'The High Priestess', 'The Empress', 'The Emperor', 'The Hierophant',
+  'The Lovers', 'The Chariot', 'Strength', 'The Hermit', 'Wheel of Fortune', 'Justice', 'The Hanged Man', 'Death',
+  'Temperance', 'The Devil', 'The Tower', 'The Star', 'The Moon', 'The Sun', 'Judgement', 'The World'];
+const RANKS = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Page', 'Knight', 'Queen', 'King'];
+const pad = n => String(n).padStart(2, '0');
+
+// The back: point-symmetric (it looks the same turned upside down, so it does not give reversals away).
+export function back() {
+  let rays = '';
+  for (let i = 0; i < 16; i++) {
+    const a = i * Math.PI / 8, l = i % 2 ? 70 : 104;
+    rays += `M150,260L${f(150 + 12 * Math.cos(a + 0.2))},${f(260 + 12 * Math.sin(a + 0.2))}L${f(150 + l * Math.cos(a))},${f(260 + l * Math.sin(a))}L${f(150 + 12 * Math.cos(a - 0.2))},${f(260 + 12 * Math.sin(a - 0.2))}Z`;
+  }
+  const dots = Array.from({ length: 24 }, (_, i) => { const a = i * Math.PI / 12; return `<circle cx="${f(150 + 122 * Math.cos(a))}" cy="${f(260 + 122 * Math.sin(a))}" r="${i % 2 ? 2 : 3.5}"/>`; }).join('');
+  const moons = [[150, 92], [150, 428]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="20" fill="${C.pale}"/><circle cx="${x + (i ? -8 : 8)}" cy="${y}" r="17" fill="${C.deep}"/>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="t d"><title id="t">Card back</title>` +
+    `<desc id="d">A night-blue card back with a golden sixteen-rayed star in a ring of beads, crescent moons above and below, and teal and violet borders.</desc>` +
+    `<defs><radialGradient id="g" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="${C.dusk}"/><stop offset="1" stop-color="${C.night}"/></radialGradient>` +
+    `<pattern id="p" width="20" height="20" patternUnits="userSpaceOnUse"><path d="${starPath(10, 10, 2.2, 4, 0.35)}" fill="${C.lilac}" opacity=".35"/></pattern></defs>` +
+    `<rect width="${W}" height="${H}" rx="16" fill="${C.night}"/><rect x="7" y="7" width="286" height="506" rx="12" fill="url(#g)" stroke="${C.gold}" stroke-width="2.2"/>` +
+    `<rect x="16" y="16" width="268" height="488" rx="8" fill="url(#p)" stroke="${C.teal}" stroke-width="1.5"/>` +
+    `<rect x="26" y="26" width="248" height="468" rx="6" fill="none" stroke="${C.lilac}" stroke-opacity=".6"/>` +
+    `<circle cx="150" cy="260" r="134" fill="${C.night}" opacity=".7"/><circle cx="150" cy="260" r="128" fill="none" stroke="${C.gold}" stroke-width="1.5"/>` +
+    `<g fill="${C.gold}">${dots}</g><path d="${rays}" fill="${C.gold}"/><circle cx="150" cy="260" r="58" fill="none" stroke="${C.teal}" stroke-width="2"/>` +
+    `<path d="${starPath(150, 260, 26, 8, 0.45, -90)}" fill="${C.pale}"/><circle cx="150" cy="260" r="7" fill="${C.night}"/>` + moons +
+    [[40, 40], [260, 40], [40, 480], [260, 480]].map(([x, y]) => `<path d="${starPath(x, y, 8, 4, 0.3)}" fill="${C.gold}"/>`).join('') + `</svg>`;
+}
+
+export function buildDeck() {
+  const out = { back: back() };
+  const majors = [...MAJOR_A, ...MAJOR_B];
+  majors.forEach((fn, n) => {
+    const r = fn();
+    out['ar' + pad(n)] = card({ title: MAJORS[n], numeral: ROMAN[n], label: `${ROMAN[n]} ${MAJORS[n]}`, ...r });
+  });
+  for (const s of ['wa', 'cu', 'sw', 'pe']) {
+    for (let rank = 1; rank <= 14; rank++) {
+      const id = s + pad(rank), name = `${RANKS[rank - 1]} of ${SUIT_NAMES[s]}`;
+      const r = minor(s, rank, id);
+      out[id] = card({ title: name, numeral: rank <= 10 ? ROMAN[rank] : RANKS[rank - 1].toUpperCase(), label: name, ...r });
+    }
+  }
+  return out;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const dir = new URL('../cards/', import.meta.url);
+  const deck = buildDeck(), check = process.argv.includes('--check');
+  if (!check) mkdirSync(dir, { recursive: true });
+  let bad = 0, total = 0;
+  for (const [id, svg] of Object.entries(deck)) {
+    const file = new URL(id + '.svg', dir);
+    total += svg.length;
+    if (check) { if (!existsSync(file) || readFileSync(file, 'utf8') !== svg) { console.log('differs: ' + id); bad++; } }
+    else writeFileSync(file, svg);
+  }
+  console.log(`${Object.keys(deck).length} files, ${(total / 1024).toFixed(0)} kB${check ? `, ${bad} differ` : ''}`);
+  process.exit(bad ? 1 : 0);
+}
