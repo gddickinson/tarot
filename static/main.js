@@ -1,5 +1,5 @@
 // Entry point: lazy page registration, the starry background, and the router start.
-import { lazy, start, route, app } from './core.js';
+import { lazy, start, route, app, isStatic } from './core.js';
 import { reducedMotion } from './widgets.js';
 
 lazy({
@@ -13,7 +13,7 @@ lazy({
 route('notfound', async () => {
   app().innerHTML = '<h1>Not found</h1><p>That page is not in the deck. <a href="#/">Back to the start</a></p>';
 });
-document.getElementById('mode').textContent = 'static site · for entertainment';
+document.getElementById('mode').textContent = `${isStatic() ? 'static site' : 'local app (Python server)'} · for entertainment`;
 
 // Background: a slow field of twinkling stars in the accent colours; drawn once under reduced motion.
 function stars() {

@@ -122,10 +122,22 @@ export function readingToQuery(r, deck) {
   if (r.significator) q.set('sig', r.significator);
   return q.toString();
 }
-export function queryToReading(q) {
+// The drawReading() arguments of a share link's query, or null if it is not a valid reading.
+export function queryToArgs(q) {
   if (!q.seed || !SPREADS[q.spread]) return null;
   const seed = Number(q.seed), cutAt = Number(q.cut);
   if (!Number.isFinite(seed) || !Number.isInteger(cutAt)) return null;
   const sig = q.sig && CARD[q.sig] ? q.sig : null;
-  return drawReading({ seed, spread: q.spread, cutAt, reversals: q.rev !== '0', significator: sig });
+  return { seed: seed >>> 0, spread: q.spread, cutAt, reversals: q.rev !== '0', significator: sig };
+}
+export function queryToReading(q) {
+  const args = queryToArgs(q);
+  return args && drawReading(args);
+}
+// drawReading() arguments as the query of the API's /draw (web/app.py, static_api.js).
+export function drawQuery({ seed, spread, cutAt = null, reversals = true, significator = null }) {
+  const q = new URLSearchParams({ spread, seed: String(seed >>> 0), rev: reversals ? '1' : '0' });
+  if (cutAt !== null && cutAt !== undefined) q.set('cut', String(cutAt));
+  if (significator) q.set('sig', significator);
+  return q.toString();
 }

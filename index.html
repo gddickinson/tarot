@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tarot Reading</title>
 <meta name="description" content="A tarot card reading webpage with its own original 78-card deck: four spreads with shuffle, cut, deal and flip animations, reversed cards, an encyclopedia of all 78 cards with Waite's 1910 meanings, and a reading journal. For entertainment.">
+<!-- Static site (GitHub Pages): static/static_api.js answers api() calls. The local app (python run_web.py)
+     serves this page with APP_STATIC = false, so the pages use its Python API instead. -->
+<script>window.APP_STATIC = true;</script>
 <link rel="icon" href="static/icon.svg">
 <link rel="stylesheet" href="static/style.css">
 <link rel="stylesheet" href="static/style_app.css">

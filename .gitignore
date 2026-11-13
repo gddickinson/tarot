@@ -1,2 +1,5 @@
 __pycache__/
 .DS_Store
+# local app data (reading journal): never committed
+/data/
+.pytest_cache/

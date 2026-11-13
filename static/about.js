@@ -17,19 +17,23 @@ route('about', async () => {
           <li>Copy a link to a reading: the same link always deals the same cards (the shuffle is seeded).</li>
           <li><a href="#/cards">Cards</a>: all 78, filtered by arcana or suit or searched, each with its picture and Waite's
             description and meanings.</li>
-          <li><a href="#/journal">Journal</a>: save readings with notes in this browser; export as JSON or Markdown and
+          <li><a href="#/journal">Journal</a>: save readings with notes (in this browser, or in a file when run as the local app); export as JSON or Markdown and
             import them elsewhere.</li>
         </ul></section>
       <section class="panel"><h3>Run it yourself</h3>
-        <p>It is a static page: no build step and no server code. Serve the repository folder with any web server and open it,
-          for example:</p>
+        <p>As a local app with a small Python server (FastAPI): it deals the readings (the same seeded shuffle as the
+          page, so links still match) and keeps your journal in a file on your computer (<code>data/journal.json</code>).</p>
         <pre>git clone https://github.com/gddickinson/tarot
 cd tarot
-python3 -m http.server 8000
-# open http://127.0.0.1:8000/</pre>
+pip install -r requirements-web.txt
+python run_web.py
+# open http://127.0.0.1:8238/</pre>
+        <p>Or as a plain static page, as on GitHub Pages (everything runs in the browser, the journal stays in the browser):
+          <code>python3 -m http.server 8000</code> in the folder, then open http://127.0.0.1:8000/.</p>
         <p class="small mute">Opening index.html straight from disk does not work, because browsers block ES modules on file:// pages.</p>
         <h3>Tests</h3><pre>node --test tests/*.test.mjs
-python tests/smoke_test.py   # Playwright</pre></section>
+python -m pytest -q tests     # the Python app
+python tests/smoke_test.py    # Playwright</pre></section>
     </div>
     <h2>Where the words come from</h2>
     <p>The meanings, the card descriptions, Waite's "recurrence" table and the Celtic Cross are quoted, unchanged, from

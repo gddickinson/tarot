@@ -3,6 +3,8 @@ nothing overflows a 390 px phone screen, and a full reading (shuffle, cut, deal,
 
     python tests/smoke_test.py            # needs: pip install playwright && playwright install chromium
     python tests/smoke_test.py --shots    # also saves README screenshots (JPEG) to docs/img/
+    python tests/smoke_test.py --base http://127.0.0.1:8238   # the same against the local app (python run_web.py);
+        # start it with TAROT_DATA_DIR=<a temporary folder>: the test clears the journal of the app it runs against
 """
 import argparse
 import functools
@@ -37,8 +39,9 @@ def serve(directory):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--shots", action="store_true")
+    ap.add_argument("--base", help="URL of a running local app (default: serve the folder as GitHub Pages does)")
     a = ap.parse_args()
-    srv, base = serve(ROOT)
+    srv, base = (None, a.base.rstrip("/") + "/") if a.base else serve(ROOT)
     bad = 0
 
     def check(ok, what):
@@ -85,6 +88,8 @@ def main():
             for width, motion in ((1280, "no-preference"), (390, "reduce")):
                 errors.clear()
                 pg = page_for(width, motion)
+                if a.base:  # the local app keeps one journal for every browser: start empty
+                    pg.request.post(base + "api/journal/clear")
                 pg.goto(base + "#/read?spread=celtic")
                 pg.wait_for_timeout(500)
                 pg.select_option("#sig", "cu13")
@@ -107,6 +112,7 @@ def main():
                 if a.shots and width == 1280:
                     pg.screenshot(path=str(ROOT / "docs" / "img" / "reading_celtic.jpg"), quality=82)
                 pg.click("#b-save")
+                pg.wait_for_selector("#b-save:disabled", timeout=5000)
                 pg.goto(base + "#/journal")
                 pg.wait_for_timeout(600)
                 saved = pg.locator(".jentry").count()
@@ -127,7 +133,8 @@ def main():
                 pg.close()
             browser.close()
     finally:
-        srv.shutdown()
+        if srv:
+            srv.shutdown()
     print("all ok" if not bad else f"{bad} failure(s)")
     sys.exit(1 if bad else 0)
 

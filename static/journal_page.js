@@ -1,8 +1,12 @@
-// #/journal : readings saved in this browser (localStorage), with notes, export (JSON, Markdown) and import.
-import { $, $$, esc, route, app, download } from './core.js';
+// #/journal : saved readings, with notes, export (JSON, Markdown) and import. Stored through the API: in
+// data/journal.json by the local Python app, in this browser's localStorage on the static site (static_api.js).
+import { $, $$, esc, route, app, download, api, isStatic } from './core.js';
 import { CARD, SPREADS, deckById, readingToQuery } from './engine.js';
-import { thumb, journal } from './widgets.js';
-import { serialiseJournal, parseJournal, mergeJournals, journalToMarkdown } from './journal_model.js';
+import { thumb } from './widgets.js';
+import { serialiseJournal, journalToMarkdown } from './journal_model.js';
+
+const load = async () => (await api('/journal', { fresh: true })).entries;
+const post = (path, body) => api('/journal/' + path, { body });
 
 const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -22,12 +26,13 @@ function entryHTML(e) {
 }
 
 route('journal', async () => {
-  const draw = (msg = '') => {
-    const entries = journal.load();
+  const draw = async (msg = '') => {
+    const entries = await load();
     app().innerHTML = `
       <div class="hero"><p class="kicker">Reading journal</p><h1 class="glow">Your readings</h1>
-        <p class="lead">Readings you save are kept in this browser only (nothing is sent anywhere). Export them to keep a copy
-        or move them to another browser.</p></div>
+        <p class="lead">${isStatic() ? `Readings you save are kept in this browser only (nothing is sent anywhere). Export them
+        to keep a copy or move them to another browser.` : `Readings you save are kept on this computer by the local app
+        (data/journal.json in the repository folder, never committed). Export them to keep a copy or move them elsewhere.`}</p></div>
       <div class="controls" style="justify-content:flex-start">
         <button type="button" id="x-json"${entries.length ? '' : ' disabled'}>Export JSON</button>
         <button type="button" id="x-md" class="alt"${entries.length ? '' : ' disabled'}>Export Markdown</button>
@@ -42,31 +47,35 @@ route('journal', async () => {
         : '<div class="panel"><p>No readings saved yet. <a href="#/read">Start a reading</a> and press "Save to journal" at the end.</p></div>'}`;
     const stamp = new Date().toISOString().slice(0, 10);
     const on = (id, fn) => { const b = $('#' + id); if (b) b.onclick = fn; };
-    on('x-json', () => download(`tarot-journal-${stamp}.json`, serialiseJournal(journal.load()), 'application/json'));
-    on('x-md', () => download(`tarot-journal-${stamp}.md`, journalToMarkdown(journal.load()), 'text/markdown'));
-    on('x-clear', () => {
-      if (confirm('Delete every saved reading from this browser? Export first if you want a copy.')) { journal.save([]); draw('Journal cleared.'); }
+    on('x-json', () => download(`tarot-journal-${stamp}.json`, serialiseJournal(entries), 'application/json'));
+    on('x-md', () => download(`tarot-journal-${stamp}.md`, journalToMarkdown(entries), 'text/markdown'));
+    on('x-clear', async () => {
+      if (!confirm(`Delete every saved reading${isStatic() ? ' from this browser' : ''}? Export first if you want a copy.`)) return;
+      try { await post('clear', {}); draw('Journal cleared.'); } catch (e) { draw('Could not clear the journal: ' + e.message); }
     });
     $('#imp').onchange = async ev => {
       const f = ev.target.files[0];
       if (!f) return;
+      let data;
+      try { data = JSON.parse(await f.text()); } catch (e) { draw('That file is not a tarot journal export.'); return; }
       try {
-        const incoming = parseJournal(await f.text());
-        const ok = journal.save(mergeJournals(journal.load(), incoming));
-        draw(ok ? `Imported ${incoming.length} reading(s).` : 'Could not store the readings in this browser.');
-      } catch (e) { draw('That file is not a tarot journal export.'); }
+        const r = await post('import', { journal: data });
+        draw(`Imported ${r.imported} reading(s).`);
+      } catch (e) {
+        draw(/^400 /.test(e.message) ? 'That file is not a tarot journal export.' : 'Could not store the readings: ' + e.message);
+      }
     };
     $$('.jentry').forEach(el => {
       const id = el.dataset.id;
-      el.querySelector('[data-del]').onclick = () => { journal.remove(id); draw('Reading deleted.'); };
+      el.querySelector('[data-del]').onclick = async () => {
+        try { await post('delete', { id }); draw('Reading deleted.'); } catch (e) { draw('Could not delete: ' + e.message); }
+      };
       const ta = el.querySelector('[data-note]');
-      ta.onchange = () => {
-        const all = journal.load(), e = all.find(x => x.id === id);
-        if (!e) return;
-        e.note = ta.value.slice(0, 5000);
-        $('#jmsg').textContent = journal.save(all) ? 'Note saved.' : 'Could not save the note in this browser.';
+      ta.onchange = async () => {
+        try { await post('note', { id, note: ta.value.slice(0, 5000) }); $('#jmsg').textContent = 'Note saved.'; }
+        catch (e) { $('#jmsg').textContent = 'Could not save the note: ' + e.message; }
       };
     });
   };
-  draw();
+  await draw();
 });

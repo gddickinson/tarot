@@ -1,16 +1,20 @@
 // #/read : a reading at the table: choose a spread, shuffle, cut, deal, turn the cards over,
 // then read Waite's meanings, save to the journal or copy a link that reproduces the reading.
-import { $, $$, esc, route, app, list } from './core.js';
-import { CARD, CARDS, SPREADS, SUITS, RANK_PLURAL, deckById, drawReading, randomSeed, recurrences, readingToQuery,
-  queryToReading } from './engine.js';
-import { cardEl, cardTags, meaningHTML, cite, journal, prefs } from './widgets.js';
+import { $, $$, esc, route, app, list, api, isStatic } from './core.js';
+import { CARD, CARDS, SPREADS, SUITS, RANK_PLURAL, deckById, randomSeed, readingToQuery, queryToArgs,
+  drawQuery } from './engine.js';
+import { cardEl, cardTags, meaningHTML, cite, prefs } from './widgets.js';
 import { makeEntry } from './journal_model.js';
 import { packHTML, shuffleAnim, cutAnim, dealAnim, flip } from './anim.js';
 
 let S = null; // state of the reading on screen
 
+// A reading from the API (the Python server's /api/draw, or static_api.js on the static site): the same arguments
+// give the same cards either way. A copy, because the page marks cards as shown.
+const draw = async args => structuredClone(await api('/draw?' + drawQuery(args)));
+
 route('read', async (args, q) => {
-  const shared = queryToReading(q);
+  const link = queryToArgs(q), shared = link ? await draw(link) : null;
   S = {
     deck: 'night',
     spread: SPREADS[q.spread] ? q.spread : 'three',
@@ -110,7 +114,7 @@ function doShuffle() {
 
 function doCut(at) {
   return busy(async () => {
-    S.reading = drawReading({ seed: S.seed, spread: S.spread, cutAt: at, reversals: S.reversals,
+    S.reading = await draw({ seed: S.seed, spread: S.spread, cutAt: at, reversals: S.reversals,
       significator: SPREADS[S.spread].significator ? S.significator : null });
     setStatus('Cutting...');
     await cutAnim($('#pack'), S.reading.cutAt / 78);
@@ -168,7 +172,7 @@ function renderInterp() {
   const r = S.reading;
   if (!r || !r.cards.some(c => c.shown)) { host.innerHTML = ''; return; }
   const shown = r.cards.map((c, i) => [c, i]).filter(([c]) => c.shown);
-  const rec = S.phase === 'revealed' ? recurrences(r.cards) : [];
+  const rec = S.phase === 'revealed' ? r.recurrences : [];
   host.innerHTML = `<h2>The cards</h2>
     ${S.question ? `<p class="quote">“${esc(S.question)}”</p>` : ''}
     ${r.significator ? `<p>Significator: <a href="#/card/${r.significator}">${CARD[r.significator].name}</a></p>` : ''}
@@ -185,10 +189,13 @@ function renderInterp() {
     ${cite()}`;
 }
 
-function save() {
-  const e = makeEntry(S.reading, { deck: S.deck, question: S.question });
-  if (journal.add(e)) { S.saved = true; setStatus('Saved to your journal (in this browser).'); $('#b-save').textContent = 'Saved'; $('#b-save').disabled = true; }
-  else setStatus('Could not save: this browser is not letting the page store data.');
+async function save() {
+  const entry = makeEntry(S.reading, { deck: S.deck, question: S.question });
+  try {
+    await api('/journal/add', { body: { entry } });
+    S.saved = true; $('#b-save').textContent = 'Saved'; $('#b-save').disabled = true;
+    setStatus(`Saved to your journal (${isStatic() ? 'in this browser' : 'on this computer, data/journal.json'}).`);
+  } catch (e) { setStatus('Could not save: ' + e.message); }
 }
 
 async function share() {

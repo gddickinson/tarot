@@ -28,3 +28,17 @@
 - Removed the three JPG decks (git rm) and deck switching; old `deck=` values in links/journal map to the new deck.
   THIRD_PARTY.md: art original, MIT; Waite quotes still cited.
 - Tests: node 24 pass (incl. tests/deck.test.mjs); Playwright smoke test all ok.
+
+## 2026-11-13: local app with a Python backend (branch web-interface)
+- George: make the site runnable as a real local app through Project Hub. Added `web/` (FastAPI `web.app:app`),
+  `run_web.py` (127.0.0.1:8238; 8160 is taken by go in the hub registry), `requirements-web.txt` (pinned).
+- API: info, deck, cards/<id>, spreads, draw (seeded, same rules as the JS), daily, journal (+ add/note/delete/import/
+  clear) stored in `data/journal.json` (git-ignored, `TAROT_DATA_DIR` overrides). Card texts are read from the
+  generated JS modules, not copied.
+- Front end: pages call `api()`; `index.html` keeps `window.APP_STATIC = true` for GitHub Pages (legacy, master root,
+  unchanged) and `static/static_api.js` answers there; the app serves the page with `false`. Added `.nojekyll`.
+- JS == Python: `tools/make_engine_fixture.mjs` -> `tests/fixtures/engine.json` (deck, mulberry32, FNV seeds, shuffle,
+  cut, 49 draws, recurrences); node checks it is current, pytest checks the port reproduces it exactly; pytest also
+  compares static_api.js with the server and cleanEntry with clean_entry.
+- Tests: pytest tests 31 pass (also CI=1 in a clean venv from requirements-web.txt); node 28 pass; smoke_test.py and
+  scripts/screenshots.py all ok in static mode and against the app (0 px overflow at 390 px).

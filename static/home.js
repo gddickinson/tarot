@@ -1,7 +1,7 @@
 // #/ : hero with a fan of cards, counts, the card of the day, the spreads and the deck.
-import { $, $$, route, app, list, esc } from './core.js';
-import { CARDS, CARD, SPREADS, drawReading, seedFrom, imageFile, BACK_FILE } from './engine.js';
-import { cardEl, cardTags, meaningHTML, cite, journal, reducedMotion } from './widgets.js';
+import { $, $$, route, app, list, esc, api } from './core.js';
+import { CARD, imageFile, BACK_FILE } from './engine.js';
+import { cardEl, cardTags, meaningHTML, cite, reducedMotion } from './widgets.js';
 import { flip } from './anim.js';
 
 const FAN = ['ar00', 'ar01', 'ar02', 'ar17', 'ar19', 'ar21', 'cu01'];
@@ -9,8 +9,10 @@ const FAN = ['ar00', 'ar01', 'ar02', 'ar17', 'ar19', 'ar21', 'cu01'];
 route('home', async () => {
   const deck = 'night';
   const today = new Date().toISOString().slice(0, 10);
-  const daily = drawReading({ seed: seedFrom('daily ' + today), spread: 'single' }).cards[0];
-  const saved = journal.load().length;
+  // From the API: the Python server, or static_api.js on the static site (same answers for the same date).
+  const [daily, info, spreads] = await Promise.all([api('/daily?date=' + today), api('/info', { fresh: true }),
+    api('/spreads')]);
+  const SPREADS = spreads, saved = info.journal;
   app().innerHTML = `
     <section class="hero">
       <p class="kicker">Tarot card reading</p>
@@ -23,8 +25,8 @@ route('home', async () => {
     </section>
     <div class="fan" id="fan" aria-hidden="true">${FAN.map(id => cardEl(id, { deck, up: true, still: true })).join('')}</div>
     <div class="tiles">
-      <div class="tile"><b>${CARDS.length}</b><span>cards: 22 major, 56 minor</span></div>
-      <div class="tile"><b>22</b><span>major arcana, each its own picture</span></div>
+      <div class="tile"><b>${info.cards}</b><span>cards: ${info.majors} major, ${info.cards - info.majors} minor</span></div>
+      <div class="tile"><b>${info.majors}</b><span>major arcana, each its own picture</span></div>
       <div class="tile"><b>${Object.keys(SPREADS).length}</b><span>spreads</span></div>
       <div class="tile"><b>${saved}</b><span>reading${saved === 1 ? '' : 's'} in your journal</span></div>
     </div>
