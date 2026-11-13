@@ -17,13 +17,14 @@ sys.path.insert(0, str(ROOT))
 
 from web import engine as E  # noqa: E402
 from web import journal as J  # noqa: E402
-from web.app import STATIC_ENDPOINTS, app  # noqa: E402
+from web.app import STATIC_ENDPOINTS, app, is_loopback  # noqa: E402
 from web.texts import load  # noqa: E402
 
 FIX = json.loads((ROOT / "tests" / "fixtures" / "engine.json").read_text())
 NODE = shutil.which("node")
 needs_node = pytest.mark.skipif(not NODE, reason="node not installed")
-client = TestClient(app)
+client = TestClient(app, client=("127.0.0.1", 50000))  # a browser on this computer
+remote = TestClient(app, client=("192.168.1.20", 50000))  # another device on the LAN
 
 
 @pytest.fixture(autouse=True)
@@ -191,6 +192,30 @@ def test_clean_entry_matches_js():
     js = node(f"""const {{ cleanEntry }} = await import('./static/journal_model.js');
       console.log(JSON.stringify({json.dumps(cases)}.map(cleanEntry)));""")
     assert [J.clean_entry(c) for c in cases] == js
+
+
+@pytest.mark.parametrize("host, ok", [("127.0.0.1", True), ("127.8.9.1", True), ("::1", True),
+                                      ("::ffff:127.0.0.1", True), ("192.168.1.20", False), ("10.0.0.5", False),
+                                      ("::ffff:192.168.1.20", False), ("testclient", False), ("", False), (None, False)])
+def test_is_loopback(host, ok):
+    assert is_loopback(host) is ok
+
+
+def test_journal_is_private_to_this_computer(data_dir):
+    """Other devices get 403 from every journal endpoint (their pages keep a journal in their own browser) and
+    never see this computer's readings; draws and the rest of the API still work for them."""
+    assert client.post("/api/journal/add", json={"entry": entry()}).json()["count"] == 1
+    before = (data_dir / "journal.json").read_bytes()
+    assert remote.get("/api/journal").status_code == 403
+    for path, body in [("add", {"entry": entry(5)}), ("note", {"id": "e99", "note": "x"}), ("delete", {"id": "e99"}),
+                       ("import", {"journal": [entry(6)]}), ("clear", None)]:
+        assert remote.post("/api/journal/" + path, json=body).status_code == 403, path
+    assert (data_dir / "journal.json").read_bytes() == before, "nothing written for another device"
+    info = remote.get("/api/info").json()
+    assert info["journal"] is None and "this browser" in info["journal_store"]
+    assert client.get("/api/info").json()["journal"] == 1
+    assert remote.get("/api/draw?seed=1&spread=three").status_code == 200
+    assert "window.APP_STATIC = false;" in remote.get("/").text
 
 
 def test_data_folder_is_git_ignored():

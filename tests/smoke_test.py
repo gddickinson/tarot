@@ -5,6 +5,8 @@ nothing overflows a 390 px phone screen, and a full reading (shuffle, cut, deal,
     python tests/smoke_test.py --shots    # also saves README screenshots (JPEG) to docs/img/
     python tests/smoke_test.py --base http://127.0.0.1:8238   # the same against the local app (python run_web.py);
         # start it with TAROT_DATA_DIR=<a temporary folder>: the test clears the journal of the app it runs against
+    python tests/smoke_test.py --base URL --as-remote   # as another device (X-Forwarded-For 192.168.1.20): the
+        # journal must stay in the browser; start the app with `uvicorn web.app:app --forwarded-allow-ips '*'`
 """
 import argparse
 import functools
@@ -40,6 +42,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--shots", action="store_true")
     ap.add_argument("--base", help="URL of a running local app (default: serve the folder as GitHub Pages does)")
+    ap.add_argument("--as-remote", action="store_true", help="send X-Forwarded-For: 192.168.1.20 (another device)")
     a = ap.parse_args()
     srv, base = (None, a.base.rstrip("/") + "/") if a.base else serve(ROOT)
     bad = 0
@@ -58,7 +61,8 @@ def main():
             errors = []
 
             def page_for(width, motion="no-preference"):
-                pg = browser.new_page(viewport={"width": width, "height": 900}, reduced_motion=motion)
+                pg = browser.new_page(viewport={"width": width, "height": 900}, reduced_motion=motion,
+                                      extra_http_headers={"X-Forwarded-For": "192.168.1.20"} if a.as_remote else None)
                 pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
                 pg.on("pageerror", lambda e: errors.append(str(e)))
                 pg.on("requestfailed", lambda r: errors.append("failed " + r.url))
@@ -88,7 +92,7 @@ def main():
             for width, motion in ((1280, "no-preference"), (390, "reduce")):
                 errors.clear()
                 pg = page_for(width, motion)
-                if a.base:  # the local app keeps one journal for every browser: start empty
+                if a.base and not a.as_remote:  # the app keeps one journal for this computer: start empty
                     pg.request.post(base + "api/journal/clear")
                 pg.goto(base + "#/read?spread=celtic")
                 pg.wait_for_timeout(500)
@@ -116,6 +120,9 @@ def main():
                 pg.goto(base + "#/journal")
                 pg.wait_for_timeout(600)
                 saved = pg.locator(".jentry").count()
+                if a.as_remote:  # kept in this browser, not in the app's file
+                    stored = pg.evaluate("(localStorage.getItem('tarot.journal.v1') || '').length > 0")
+                    check(stored and "kept in this browser" in pg.inner_text("#app"), f"{width}px remote journal in localStorage")
                 check(n == 10 and one == 1 and up >= 10 and sig_dealt == 0 and saved == 1 and over <= 1 and not errors,
                       f"{width}px reading ({motion}): dealt={n} first={one} face-up={up} saved={saved} overflow={over}px "
                       + " | ".join(errors)[:300])

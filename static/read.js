@@ -1,10 +1,11 @@
 // #/read : a reading at the table: choose a spread, shuffle, cut, deal, turn the cards over,
 // then read Waite's meanings, save to the journal or copy a link that reproduces the reading.
-import { $, $$, esc, route, app, list, api, isStatic } from './core.js';
+import { $, $$, esc, route, app, list, api } from './core.js';
 import { CARD, CARDS, SPREADS, SUITS, RANK_PLURAL, deckById, randomSeed, readingToQuery, queryToArgs,
   drawQuery } from './engine.js';
 import { cardEl, cardTags, meaningHTML, cite, prefs } from './widgets.js';
 import { makeEntry } from './journal_model.js';
+import { journalApi, inBrowser } from './journal_api.js';
 import { packHTML, shuffleAnim, cutAnim, dealAnim, flip } from './anim.js';
 
 let S = null; // state of the reading on screen
@@ -192,9 +193,9 @@ function renderInterp() {
 async function save() {
   const entry = makeEntry(S.reading, { deck: S.deck, question: S.question });
   try {
-    await api('/journal/add', { body: { entry } });
+    await journalApi('/journal/add', { entry });
     S.saved = true; $('#b-save').textContent = 'Saved'; $('#b-save').disabled = true;
-    setStatus(`Saved to your journal (${isStatic() ? 'in this browser' : 'on this computer, data/journal.json'}).`);
+    setStatus(`Saved to your journal (${await inBrowser() ? 'in this browser' : 'on this computer, data/journal.json'}).`);
   } catch (e) { setStatus('Could not save: ' + e.message); }
 }
 

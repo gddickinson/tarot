@@ -68,7 +68,11 @@ of the day, serves the deck and Waite's texts, and keeps the reading journal in 
 | `GET /api/spreads` | the four spreads and their positions |
 | `GET /api/draw?spread=&seed=&cut=&rev=&sig=` | a seeded reading (random seed if left out; the seed is returned) + recurrences |
 | `GET /api/daily?date=YYYY-MM-DD` | the card of the day |
-| `GET /api/journal`; `POST /api/journal/{add,note,delete,import,clear}` | the reading journal |
+| `GET /api/journal`; `POST /api/journal/{add,note,delete,import,clear}` | the reading journal (this computer only) |
+
+The journal file is private to the computer running the app: its endpoints answer only requests from localhost
+(403 otherwise). Other devices that open the app (if it is allowed on the local network) keep their own journal in
+their browser, exactly as on the static site.
 
 ![The journal in the local app](docs/img/journal_local_app.jpg)
 

@@ -3,6 +3,7 @@ import { $, $$, route, app, list, esc, api } from './core.js';
 import { CARD, imageFile, BACK_FILE } from './engine.js';
 import { cardEl, cardTags, meaningHTML, cite, reducedMotion } from './widgets.js';
 import { flip } from './anim.js';
+import { journalApi } from './journal_api.js';
 
 const FAN = ['ar00', 'ar01', 'ar02', 'ar17', 'ar19', 'ar21', 'cu01'];
 
@@ -10,9 +11,9 @@ route('home', async () => {
   const deck = 'night';
   const today = new Date().toISOString().slice(0, 10);
   // From the API: the Python server, or static_api.js on the static site (same answers for the same date).
-  const [daily, info, spreads] = await Promise.all([api('/daily?date=' + today), api('/info', { fresh: true }),
-    api('/spreads')]);
-  const SPREADS = spreads, saved = info.journal;
+  const [daily, info, spreads, mine] = await Promise.all([api('/daily?date=' + today), api('/info'),
+    api('/spreads'), journalApi('/journal')]);
+  const SPREADS = spreads, saved = mine.entries.length;
   app().innerHTML = `
     <section class="hero">
       <p class="kicker">Tarot card reading</p>

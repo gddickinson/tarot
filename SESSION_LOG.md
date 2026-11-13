@@ -42,3 +42,7 @@
   compares static_api.js with the server and cleanEntry with clean_entry.
 - Tests: pytest tests 31 pass (also CI=1 in a clean venv from requirements-web.txt); node 28 pass; smoke_test.py and
   scripts/screenshots.py all ok in static mode and against the app (0 px overflow at 390 px).
+- Journal privacy (lead): journal endpoints answer only loopback clients (403 otherwise, /api/info gives journal
+  null); `static/journal_api.js` sends other devices' journals to their own localStorage. Tests: pytest 42 pass
+  (TestClient as 127.0.0.1 and as 192.168.1.20); smoke_test.py `--as-remote` (X-Forwarded-For through uvicorn
+  --forwarded-allow-ips) all ok with nothing written to the data folder; static and local runs all ok.

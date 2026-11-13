@@ -1,12 +1,13 @@
 // #/journal : saved readings, with notes, export (JSON, Markdown) and import. Stored through the API: in
-// data/journal.json by the local Python app, in this browser's localStorage on the static site (static_api.js).
-import { $, $$, esc, route, app, download, api, isStatic } from './core.js';
+// data/journal.json by the local Python app (for this computer), else in this browser's localStorage (journal_api.js).
+import { $, $$, esc, route, app, download } from './core.js';
+import { journalApi, inBrowser } from './journal_api.js';
 import { CARD, SPREADS, deckById, readingToQuery } from './engine.js';
 import { thumb } from './widgets.js';
 import { serialiseJournal, journalToMarkdown } from './journal_model.js';
 
-const load = async () => (await api('/journal', { fresh: true })).entries;
-const post = (path, body) => api('/journal/' + path, { body });
+const load = async () => (await journalApi('/journal')).entries;
+const post = (path, body) => journalApi('/journal/' + path, body);
 
 const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -27,10 +28,10 @@ function entryHTML(e) {
 
 route('journal', async () => {
   const draw = async (msg = '') => {
-    const entries = await load();
+    const entries = await load(), local = await inBrowser();
     app().innerHTML = `
       <div class="hero"><p class="kicker">Reading journal</p><h1 class="glow">Your readings</h1>
-        <p class="lead">${isStatic() ? `Readings you save are kept in this browser only (nothing is sent anywhere). Export them
+        <p class="lead">${local ? `Readings you save are kept in this browser only (nothing is sent anywhere). Export them
         to keep a copy or move them to another browser.` : `Readings you save are kept on this computer by the local app
         (data/journal.json in the repository folder, never committed). Export them to keep a copy or move them elsewhere.`}</p></div>
       <div class="controls" style="justify-content:flex-start">
@@ -50,7 +51,7 @@ route('journal', async () => {
     on('x-json', () => download(`tarot-journal-${stamp}.json`, serialiseJournal(entries), 'application/json'));
     on('x-md', () => download(`tarot-journal-${stamp}.md`, journalToMarkdown(entries), 'text/markdown'));
     on('x-clear', async () => {
-      if (!confirm(`Delete every saved reading${isStatic() ? ' from this browser' : ''}? Export first if you want a copy.`)) return;
+      if (!confirm(`Delete every saved reading${local ? ' from this browser' : ''}? Export first if you want a copy.`)) return;
       try { await post('clear', {}); draw('Journal cleared.'); } catch (e) { draw('Could not clear the journal: ' + e.message); }
     });
     $('#imp').onchange = async ev => {

@@ -20,6 +20,7 @@ readings or links) maps to it.
 | `static/style_app.css` | palette (gold/violet/teal), `.tcard` 3D flip, `.back-0` card back (cards/back.svg), table, spread grids, page styles |
 | `static/main.js` | registers pages lazily, not-found page, starry `#bg` canvas, `start()` |
 | `static/engine.js` | **pure**: `CARDS`, `CARD`, `SUITS`, `RANKS`, `MAJORS`, `DECKS`, `deckById`, `imageFile`, `BACK_FILE`, `seedFrom`, `shuffle`, `cut`, `SPREADS`, `drawReading`, `recurrences`, `readingToQuery`, `queryToArgs`, `queryToReading`, `drawQuery` |
+| `static/journal_api.js` | `journalApi(path, body)`, `inBrowser()`: the app's journal for this computer, else localStorage via static_api |
 | `static/static_api.js` | `staticApi(path, body)`: the local app's API answered in the browser (engine + localStorage journal) |
 | `static/journal_model.js` | **pure**: `makeEntry`, `cleanEntry`, `serialiseJournal`, `parseJournal`, `mergeJournals`, `journalToMarkdown` |
 | `static/waite_pkt.js` | generated data: `WAITE` (78 cards: description, upright, reversed, additional), `CELTIC_POSITIONS`, `RECURRENCE`, `WAITE_SOURCE` |
@@ -41,7 +42,7 @@ readings or links) maps to it.
 | `tests/engine.test.mjs`, `tests/journal.test.mjs`, `tests/deck.test.mjs` | node tests of the pure modules (`node --test tests/*.test.mjs`) |
 | `tests/smoke_test.py` | Playwright smoke test against the `http.server` server, or `--base URL` of the app (`--shots` refreshes `docs/img/`) |
 | `run_web.py` | starts the local app: uvicorn `web.app:app` on 127.0.0.1:8238 (`--port`) |
-| `web/app.py` | FastAPI `app`: `/` (index.html with APP_STATIC false), `/static`, `/cards`, `/api/info`, `/api/deck`, `/api/cards/{id}`, `/api/spreads`, `/api/draw`, `/api/daily`, `/api/journal` + POST `add`/`note`/`delete`/`import`/`clear`; `STATIC_ENDPOINTS` |
+| `web/app.py` | FastAPI `app`: `/` (index.html with APP_STATIC false), `/static`, `/cards`, `/api/info`, `/api/deck`, `/api/cards/{id}`, `/api/spreads`, `/api/draw`, `/api/daily`, `/api/journal` + POST `add`/`note`/`delete`/`import`/`clear` (loopback only: `is_loopback`, `local_only`, 403); `STATIC_ENDPOINTS` |
 | `web/engine.py` | Python port of engine.js + core.js `rng`: `CARDS`, `CARD`, `SPREADS`, `rng`, `seed_from`, `shuffle`, `cut`, `draw_reading`, `recurrences` |
 | `web/texts.py` | `load()`: `WAITE`, `CELTIC_POSITIONS`, `RECURRENCE`, `WAITE_SOURCE`, `DECK_DESC` read from the generated JS modules |
 | `web/journal.py` | `clean_entry`, `merge`, `parse` (journal_model.js rules); `load`/`save`/`update` of `data/journal.json` (`$TAROT_DATA_DIR`) |

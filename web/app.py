@@ -3,10 +3,13 @@
 Run with `python run_web.py` (http://127.0.0.1:8238, local only). The same front end is published as a static site by
 GitHub Pages from the repository root; there, static/static_api.js answers the same api() calls in the browser.
 The server's copy of index.html says `window.APP_STATIC = false`, so the pages use this API instead.
+The journal file is private to this computer: its endpoints answer only loopback requests (403 for other devices,
+whose pages then keep a journal in their own browser, as on the static site; see static/journal_api.js).
 """
+import ipaddress
 from datetime import date as Date
 
-from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -21,6 +24,21 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.mount("/cards", StaticFiles(directory=ROOT / "cards"), name="cards")
 
 
+def is_loopback(host: str | None) -> bool:
+    """True for 127.0.0.0/8, ::1 and IPv4-mapped loopback; False for anything else (other devices, unknown)."""
+    try:
+        ip = ipaddress.ip_address(host or "")
+    except ValueError:
+        return False
+    return ip.is_loopback or bool(getattr(ip, "ipv4_mapped", None) and ip.ipv4_mapped.is_loopback)
+
+
+def local_only(request: Request) -> None:
+    """Journal endpoints: only requests from this computer read or write data/journal.json."""
+    if not is_loopback(request.client.host if request.client else None):
+        raise HTTPException(403, "the journal on this computer is private; this browser keeps its own journal")
+
+
 @app.get("/", include_in_schema=False)
 def index():
     html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -28,11 +46,13 @@ def index():
 
 
 @app.get("/api/info")
-def info():
-    """Project summary and counts for the home page."""
+def info(request: Request):
+    """Project summary and counts for the home page (the journal count only for requests from this computer)."""
+    local = is_loopback(request.client.host if request.client else None)
     return {"title": "Tarot Reading", "mode": "server", "cards": len(E.CARDS),
             "majors": sum(c["arcana"] == "major" for c in E.CARDS), "spreads": len(E.SPREADS),
-            "journal": len(J.load()), "journal_store": "data/journal.json (this computer)",
+            "journal": len(J.load()) if local else None,
+            "journal_store": "data/journal.json (this computer)" if local else "this browser (localStorage)",
             "source": load()["WAITE_SOURCE"]}
 
 
@@ -89,12 +109,12 @@ def daily(date: str = Query(..., description="YYYY-MM-DD")):
 
 
 # --- reading journal (data/journal.json, git-ignored) ---------------------------------------------
-@app.get("/api/journal")
+@app.get("/api/journal", dependencies=[Depends(local_only)])
 def journal_list():
     return {"entries": J.load()}
 
 
-@app.post("/api/journal/add")
+@app.post("/api/journal/add", dependencies=[Depends(local_only)])
 def journal_add(entry: dict = Body(..., embed=True)):
     e = J.clean_entry(entry)
     if not e:
@@ -102,7 +122,7 @@ def journal_add(entry: dict = Body(..., embed=True)):
     return {"ok": True, "count": len(J.update(lambda es: J.merge(es, [e])))}
 
 
-@app.post("/api/journal/note")
+@app.post("/api/journal/note", dependencies=[Depends(local_only)])
 def journal_note(id: str = Body(...), note: str = Body("")):
     found = []
 
@@ -118,12 +138,12 @@ def journal_note(id: str = Body(...), note: str = Body("")):
     return {"ok": True}
 
 
-@app.post("/api/journal/delete")
+@app.post("/api/journal/delete", dependencies=[Depends(local_only)])
 def journal_delete(id: str = Body(..., embed=True)):
     return {"ok": True, "count": len(J.update(lambda es: [e for e in es if e["id"] != id]))}
 
 
-@app.post("/api/journal/import")
+@app.post("/api/journal/import", dependencies=[Depends(local_only)])
 def journal_import(journal=Body(..., embed=True)):
     try:
         incoming = J.parse(journal)
@@ -132,7 +152,7 @@ def journal_import(journal=Body(..., embed=True)):
     return {"ok": True, "imported": len(incoming), "count": len(J.update(lambda es: J.merge(es, incoming)))}
 
 
-@app.post("/api/journal/clear")
+@app.post("/api/journal/clear", dependencies=[Depends(local_only)])
 def journal_clear():
     J.update(lambda es: [])
     return {"ok": True, "count": 0}
