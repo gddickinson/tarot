@@ -50,3 +50,22 @@ def load() -> dict:
     if missing:
         raise RuntimeError(f"card data modules lack {sorted(missing)}")
     return data
+
+
+READING_MODULES = ["reading_cards.js", "reading_lore.js", "reading_positions.js", "reading_phrases.js"]
+
+
+@lru_cache(maxsize=1)
+def reading_data() -> dict:
+    """The reading engine's text and correspondence tables (CARD_TEXT, SUIT_LORE, POSITIONS, THREAD, ...), every
+    `export const` of static/reading_*.js, the same objects static/reading_engine.js imports."""
+    data = {}
+    for name in READING_MODULES:
+        data.update(js_consts(STATIC / name))
+    need = {"CARD_TEXT", "MAJOR_ELEMENT", "ELEMENTS", "CONTRARY", "SUIT_LORE", "SUIT_TOPIC", "NUMBER_LORE",
+            "COURT_LORE", "SUIT_ADJ", "PAIRS", "TOPICS", "TOPIC_NAMES", "DECISION_WORDS", "SENSITIVE", "POSITIONS",
+            "REFLECT", "EXTRAS", "TONES", "SPREAD_NAMES", "MODE", "OPEN", "SUMMARY", "SENSITIVE_MSG",
+            "THREAD_TITLES", "THREAD", "CLOSE", "QUESTIONS"}
+    if need - set(data):
+        raise RuntimeError(f"reading modules lack {sorted(need - set(data))}")
+    return data

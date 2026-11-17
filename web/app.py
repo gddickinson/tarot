@@ -13,8 +13,10 @@ from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import elaborate as AI
 from . import engine as E
 from . import journal as J
+from . import reading as R
 from .texts import ROOT, STATIC, load
 
 STATIC_MARK = "window.APP_STATIC = true;"
@@ -53,7 +55,9 @@ def info(request: Request):
             "majors": sum(c["arcana"] == "major" for c in E.CARDS), "spreads": len(E.SPREADS),
             "journal": len(J.load()) if local else None,
             "journal_store": "data/journal.json (this computer)" if local else "this browser (localStorage)",
-            "source": load()["WAITE_SOURCE"]}
+            "source": load()["WAITE_SOURCE"],
+            # the optional local-AI button (off unless run_web.py --ollama MODEL; this computer only)
+            "elaborate": AI.model() if local else None}
 
 
 @app.get("/api/deck")
@@ -95,6 +99,34 @@ def draw(spread: str = "three", seed: int | None = Query(None, description="32-b
          rev: bool = True, sig: str | None = None):
     """A seeded reading: the same seed, spread, cut, reversals and significator give the same cards as the JS."""
     return _reading(seed, spread, cut, rev, sig)
+
+
+@app.get("/api/reading")
+def reading(spread: str = "three", seed: int | None = Query(None, description="32-bit seed; random if left out"),
+            cut: int | None = None, rev: bool = True, sig: str | None = None,
+            q: str = Query("", max_length=500, description="the question (optional)"),
+            tone: str = Query("modern", description="traditional, modern or brief")):
+    """A seeded reading (as /api/draw) with its written interpretation (web/reading.py, a port of
+    static/reading_engine.js): the same arguments give the same text on the server and on the static site."""
+    r = _reading(seed, spread, cut, rev, sig)
+    return {**r, "interpretation": R.interpret(r, q, tone)}
+
+
+@app.post("/api/elaborate", dependencies=[Depends(local_only)])
+def elaborate(spread: str = Body("three"), seed: int = Body(...), cut: int | None = Body(None), rev: bool = Body(True),
+              sig: str | None = Body(None), q: str = Body("", max_length=500), tone: str = Body("modern")):
+    """Optional: a local AI model (Ollama) elaborates on the written reading. Off by default (404); this computer
+    only; refused for questions the reading engine treats as sensitive. The reading is rebuilt here from its
+    arguments, so only text this app wrote is sent to the model."""
+    if not AI.model():
+        raise HTTPException(404, "the local AI is off (start the app with --ollama MODEL)")
+    it = R.interpret(_reading(seed, spread, cut, rev, sig), q, tone)
+    if it["sensitive"]:
+        raise HTTPException(400, "the local AI is not asked about this kind of question")
+    try:
+        return {"model": AI.model(), "text": AI.elaborate(it)}
+    except (OSError, ValueError) as err:
+        raise HTTPException(502, f"could not reach Ollama: {err}")
 
 
 @app.get("/api/daily")
@@ -160,4 +192,7 @@ def journal_clear():
 
 # GET paths (without /api) checked by tests/test_web.py; the static site answers them in static_api.js.
 STATIC_ENDPOINTS = ["/info", "/deck", "/spreads", "/cards/ar00", "/draw?seed=1&spread=three",
-                    "/draw?seed=5&spread=celtic&cut=33&rev=0&sig=cu13", "/daily?date=2026-11-13", "/journal"]
+                    "/draw?seed=5&spread=celtic&cut=33&rev=0&sig=cu13", "/daily?date=2026-11-13", "/journal",
+                    "/reading?seed=1&spread=three",
+                    "/reading?seed=5&spread=celtic&cut=33&sig=cu13&tone=traditional&q=Will+I+find+love%3F",
+                    "/reading?seed=8&spread=four&rev=0&tone=brief&q=Should%20I%20invest%20in%20shares%3F"]

@@ -7,6 +7,7 @@ import { WAITE, WAITE_SOURCE } from './waite_pkt.js';
 import { DECK_DESC } from './deck_desc.js';
 import { journal } from './widgets.js';
 import { cleanEntry, parseJournal, mergeJournals } from './journal_model.js';
+import { interpret } from './reading_engine.js';
 
 const fail = (status, msg) => { throw new Error(`${status} ${msg}`); };
 const intOrNull = v => (v === null || v === undefined || v === '' ? null
@@ -38,6 +39,12 @@ const GET = {
     : fail(404, `no card ${id}`)),
   spreads: () => SPREADS,
   draw: q => reading(q),
+  reading: q => {
+    const question = q.get('q') || '';
+    if (question.length > 500) fail(422, 'question longer than 500 characters');
+    const r = reading(q);
+    return { ...r, interpretation: interpret(r, { question, tone: q.get('tone') || 'modern' }) };
+  },
   daily: q => {
     const date = q.get('date') || '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) fail(400, 'date must be YYYY-MM-DD');
