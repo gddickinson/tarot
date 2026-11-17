@@ -123,3 +123,11 @@ test('Waite text present for all 78 cards', () => {
   assert.match(WAITE.ar08.upright, /^Power, energy, action, courage/);
   assert.match(WAITE.sw13.reversed, /^Malice, bigotry/);
 });
+
+test('Four of Pentacles: reversed meaning split off although Waite prints "Reversed;"', () => {
+  assert.equal(WAITE.pe04.upright, 'The surety of possessions, cleaving to that which one has, gift, legacy, inheritance.');
+  assert.equal(WAITE.pe04.reversed, 'Suspense, delay, opposition.');
+  for (const c of CARDS) assert.doesNotMatch(WAITE[c.id].upright, /\bReversed\b/, c.id);
+  const empty = CARDS.filter(c => !WAITE[c.id].reversed).map(c => c.id);
+  assert.deepEqual(empty, ['cu02'], 'only the Two of Cups lacks a reversed meaning');
+});

@@ -38,8 +38,10 @@ def cid(prefix, n):
 
 
 def split_meanings(par):
-    """'<description> Divinatory Meanings: <up> Reversed: <rev>' -> three strings."""
-    m = re.match(r"(.*?)\s*Divinatory Meanings:\s*(.*?)(?:\s*Reversed:\s*(.*))?$", par)
+    """'<description> Divinatory Meanings: <up> Reversed: <rev>' -> three strings.
+
+    The Four of Pentacles prints "Reversed;" (semicolon), so either mark starts the reversed meaning."""
+    m = re.match(r"(.*?)\s*Divinatory Meanings:\s*(.*?)(?:\s*Reversed[:;]\s*(.*))?$", par)
     if not m:
         raise ValueError("no meanings in: " + par[:80])
     desc = m.group(1)
