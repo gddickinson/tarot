@@ -79,9 +79,11 @@ export const SPREADS = {
     positions: ['Past', 'Present', 'Future'] },
   four: { label: 'Four-card draw', blurb: 'The reading of the original page: four cards drawn in a row.',
     positions: ['First card', 'Second card', 'Third card', 'Fourth card'] },
+  // Waite's position names ("What covers him", ...) are his 1910 wording (`waite`); the site speaks to the reader.
   celtic: { label: 'Celtic Cross', blurb: 'Ten cards, "An Ancient Celtic Method of Divination" from Waite\'s ' +
     'Pictorial Key (1910), with an optional Significator.', significator: true,
-    positions: CELTIC_POSITIONS.map(p => p.replace(/^\d+\.\s*/, '').replace(/\.$/, '')) },
+    positions: ['What covers you', 'What crosses you', 'What crowns you', 'Beneath you', 'Behind you', 'Before you', 'Yourself', 'Your house', 'Your hopes or fears', 'What will come'],
+    waite: CELTIC_POSITIONS.map(p => p.replace(/^\d+\.\s*/, '').replace(/\.$/, '')) },
 };
 
 // A reading is fully determined by (seed, spread, cut, reversals, significator): the same inputs give
@@ -120,6 +122,17 @@ export function readingToQuery(r, deck) {
   const q = new URLSearchParams({ spread: r.spread, deck, seed: String(r.seed), cut: String(r.cutAt),
     rev: r.reversals ? '1' : '0' });
   if (r.significator) q.set('sig', r.significator);
+  return q.toString();
+}
+// The query of a share link: the cards (readingToQuery), the tone of the written reading, and the question only if
+// the reader chose to include it; otherwise qw=1 (a question was asked but withheld), so the shared reading leaves
+// the question line out. Either way the same link always writes the same text.
+export function shareQuery(r, deck, { tone = 'modern', question = '', includeQuestion = false } = {}) {
+  const q = new URLSearchParams(readingToQuery(r, deck));
+  q.set('tone', tone);
+  const text = String(question || '').trim();
+  if (text && includeQuestion) q.set('q', text);
+  else if (text) q.set('qw', '1');
   return q.toString();
 }
 // The drawReading() arguments of a share link's query, or null if it is not a valid reading.

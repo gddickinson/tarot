@@ -658,6 +658,18 @@
    "blurb": "Ten cards, \"An Ancient Celtic Method of Divination\" from Waite's Pictorial Key (1910), with an optional Significator.",
    "significator": true,
    "positions": [
+    "What covers you",
+    "What crosses you",
+    "What crowns you",
+    "Beneath you",
+    "Behind you",
+    "Before you",
+    "Yourself",
+    "Your house",
+    "Your hopes or fears",
+    "What will come"
+   ],
+   "waite": [
     "What covers him",
     "What crosses him",
     "What crowns him",
@@ -2185,47 +2197,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "pe03",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "ar21",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "sw03",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "pe09",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa09",
       "reversed": true
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "ar02",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "pe01",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "sw07",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "ar15",
       "reversed": true
      },
@@ -2252,47 +2264,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "pe02",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "wa04",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "sw12",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "pe04",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "pe06",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "ar13",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "sw09",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "sw04",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu08",
       "reversed": false
      },
@@ -2317,47 +2329,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "ar02",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "cu10",
       "reversed": true
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar20",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "sw13",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa03",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "sw06",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "wa01",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "cu02",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "sw02",
       "reversed": true
      },
@@ -2384,47 +2396,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "sw14",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "cu12",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "cu14",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "pe14",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "ar16",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "ar13",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "ar06",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar01",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "wa13",
       "reversed": false
      },
@@ -2449,47 +2461,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "wa01",
       "reversed": true
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "ar04",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "wa03",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "cu11",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa06",
       "reversed": true
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "ar07",
       "reversed": true
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "pe10",
       "reversed": true
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "sw10",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "ar00",
       "reversed": true
      },
@@ -2516,47 +2528,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "pe14",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "ar09",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "sw04",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "wa04",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa02",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "sw11",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "sw08",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "pe07",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu02",
       "reversed": false
      },
@@ -2581,47 +2593,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "ar11",
       "reversed": true
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "ar01",
       "reversed": true
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "sw13",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "ar03",
       "reversed": true
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "cu09",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "pe05",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "cu13",
       "reversed": true
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar04",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "sw09",
       "reversed": false
      },
@@ -2648,47 +2660,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "ar00",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "ar11",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar01",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "sw13",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "ar03",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "cu09",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "pe05",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "cu13",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "ar04",
       "reversed": false
      },
@@ -2713,47 +2725,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "wa08",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "pe11",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar10",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "ar05",
       "reversed": true
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa03",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "pe02",
       "reversed": true
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "ar17",
       "reversed": true
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "pe14",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "ar19",
       "reversed": true
      },
@@ -2780,47 +2792,47 @@
     "significator": null,
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu03",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "cu08",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar01",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "wa08",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "pe11",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "ar10",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "ar05",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "wa03",
       "reversed": false
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "pe02",
       "reversed": false
      },
@@ -2846,47 +2858,47 @@
     "significator": "cu13",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu14",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "sw04",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar15",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "sw14",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa11",
       "reversed": true
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "sw03",
       "reversed": true
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "cu07",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar06",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu11",
       "reversed": true
      },
@@ -2912,47 +2924,47 @@
     "significator": "cu13",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu03",
       "reversed": true
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "wa13",
       "reversed": true
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "cu06",
       "reversed": true
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "wa06",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "sw01",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "cu01",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "wa08",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar01",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu11",
       "reversed": true
      },
@@ -2978,47 +2990,47 @@
     "significator": "ar00",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu14",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "sw04",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar16",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "sw14",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa12",
       "reversed": true
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "sw03",
       "reversed": true
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "cu08",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar07",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu12",
       "reversed": true
      },
@@ -3044,47 +3056,47 @@
     "significator": "ar00",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu04",
       "reversed": true
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "wa14",
       "reversed": true
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "cu07",
       "reversed": true
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "wa07",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "sw01",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "cu02",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "wa09",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar02",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu12",
       "reversed": true
      },
@@ -3110,47 +3122,47 @@
     "significator": "pe14",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu13",
       "reversed": false
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "sw03",
       "reversed": false
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "ar15",
       "reversed": false
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "sw13",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "wa11",
       "reversed": true
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "sw02",
       "reversed": true
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "cu07",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar06",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu11",
       "reversed": true
      },
@@ -3176,47 +3188,47 @@
     "significator": "pe14",
     "cards": [
      {
-      "pos": "What covers him",
+      "pos": "What covers you",
       "id": "cu03",
       "reversed": true
      },
      {
-      "pos": "What crosses him",
+      "pos": "What crosses you",
       "id": "wa13",
       "reversed": true
      },
      {
-      "pos": "What crowns him",
+      "pos": "What crowns you",
       "id": "cu06",
       "reversed": true
      },
      {
-      "pos": "What is beneath him",
+      "pos": "Beneath you",
       "id": "wa06",
       "reversed": false
      },
      {
-      "pos": "What is behind him",
+      "pos": "Behind you",
       "id": "cu14",
       "reversed": false
      },
      {
-      "pos": "What is before him",
+      "pos": "Before you",
       "id": "cu01",
       "reversed": false
      },
      {
-      "pos": "Himself",
+      "pos": "Yourself",
       "id": "wa08",
       "reversed": false
      },
      {
-      "pos": "His house",
+      "pos": "Your house",
       "id": "ar01",
       "reversed": true
      },
      {
-      "pos": "His hopes or fears",
+      "pos": "Your hopes or fears",
       "id": "cu11",
       "reversed": true
      },

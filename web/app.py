@@ -105,11 +105,12 @@ def draw(spread: str = "three", seed: int | None = Query(None, description="32-b
 def reading(spread: str = "three", seed: int | None = Query(None, description="32-bit seed; random if left out"),
             cut: int | None = None, rev: bool = True, sig: str | None = None,
             q: str = Query("", max_length=500, description="the question (optional)"),
-            tone: str = Query("modern", description="traditional, modern or brief")):
+            tone: str = Query("modern", description="traditional, modern or brief"),
+            qw: bool = Query(False, description="a shared link whose question was kept private")):
     """A seeded reading (as /api/draw) with its written interpretation (web/reading.py, a port of
     static/reading_engine.js): the same arguments give the same text on the server and on the static site."""
     r = _reading(seed, spread, cut, rev, sig)
-    return {**r, "interpretation": R.interpret(r, q, tone)}
+    return {**r, "interpretation": R.interpret(r, q, tone, qw)}
 
 
 @app.post("/api/elaborate", dependencies=[Depends(local_only)])
@@ -195,4 +196,5 @@ STATIC_ENDPOINTS = ["/info", "/deck", "/spreads", "/cards/ar00", "/draw?seed=1&s
                     "/draw?seed=5&spread=celtic&cut=33&rev=0&sig=cu13", "/daily?date=2026-11-13", "/journal",
                     "/reading?seed=1&spread=three",
                     "/reading?seed=5&spread=celtic&cut=33&sig=cu13&tone=traditional&q=Will+I+find+love%3F",
-                    "/reading?seed=8&spread=four&rev=0&tone=brief&q=Should%20I%20invest%20in%20shares%3F"]
+                    "/reading?seed=8&spread=four&rev=0&tone=brief&q=Should%20I%20invest%20in%20shares%3F",
+                    "/reading?seed=9&spread=celtic&qw=1", "/reading?seed=9&spread=three&qw=true&tone=traditional"]

@@ -133,3 +133,4 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
 .questions li { margin:4px 0; }
 .saved-reading { margin:8px 0; }
 .reading-plain { white-space:pre-wrap; overflow-wrap:anywhere; font-family:inherit; font-size:14px; max-height:420px; overflow:auto; }
+.share-q { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--mute); }

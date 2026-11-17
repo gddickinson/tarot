@@ -43,7 +43,8 @@ python tests/smoke_test.py    # Playwright</pre></section>
       Pamela Colman Smith), Part II §2 and Part III §2-§5 and §7, using the
       <a href="https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot" target="_blank" rel="noopener">Wikisource transcription</a>.
       The book is in the public domain in the US. Waite himself calls the fortune-telling meanings of the trumps "artificial and arbitrary".</p>
-    <p class="small mute">Waite's ten Celtic Cross positions: ${CELTIC_POSITIONS.join(' ')}</p>
+    <p class="small mute">Waite's ten Celtic Cross positions, in his 1910 wording: ${CELTIC_POSITIONS.join(' ')} The reading
+      speaks to you instead: what covers you, what crosses you, and so on.</p>
     <h2>How the readings are written</h2>
     <p>The written reading comes from a small rule-based engine in this site (no AI and no server needed): each card's
       meaning is woven into the role of its position, reversed cards are read as blocked, turned inward, delayed,

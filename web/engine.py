@@ -115,7 +115,8 @@ def spreads() -> dict:
                  "positions": ["First card", "Second card", "Third card", "Fourth card"]},
         "celtic": {"label": "Celtic Cross", "blurb": "Ten cards, \"An Ancient Celtic Method of Divination\" from "
                    "Waite's Pictorial Key (1910), with an optional Significator.", "significator": True,
-                   "positions": celtic},
+                   "positions": ["What covers you", "What crosses you", "What crowns you", "Beneath you", "Behind you", "Before you", "Yourself", "Your house", "Your hopes or fears", "What will come"],
+                   "waite": celtic},  # Waite's 1910 names ("What covers him", ...); the site speaks to the reader
     }
 
 

@@ -87,7 +87,7 @@ def position_text(ctx: Ctx, i: int) -> dict:
     vars_ = {"card": r, "Card": cap(r), "meaning": ct["rev"] if rev else ct["up"], "short": role["short"],
              "Short": cap(role["short"])}
     parts = [fill(ctx.pick(d["REFLECT"][tone] if reflect else role["frames"][tone], f"pos{i}"), vars_)]
-    if rev:
+    if rev and d["MODE"][tone][ct["mode"]]:
         parts.append(ctx.pick(d["MODE"][tone][ct["mode"]], f"mode{i}"))
     v, ex = valence(c), d["EXTRAS"]
     if ctx.spread == "celtic":
@@ -104,17 +104,18 @@ def position_text(ctx: Ctx, i: int) -> dict:
         if group not in ctx.used_topic:
             parts.append(d["SUIT_TOPIC"][group][ctx.topic_key])
             ctx.used_topic.add(group)
-    return {"i": i, "pos": c["pos"], "id": c["id"], "reversed": rev,
-            "heading": f"{i + 1}. {c['pos']}: {card['name']}{' (reversed)' if rev else ''}", "text": " ".join(parts)}
+    pos = SPREADS[ctx.spread]["positions"][i]  # not c["pos"]: older journal entries carry Waite's wording
+    return {"i": i, "pos": pos, "id": c["id"], "reversed": rev,
+            "heading": f"{i + 1}. {pos}: {card['name']}{' (reversed)' if rev else ''}", "text": " ".join(parts)}
 
 
-def intro(ctx: Ctx, question) -> list[str]:
+def intro(ctx: Ctx, question, withheld: bool = False) -> list[str]:
     d, tone, q = D(), ctx.tone, ctx.q
     if q["sensitive"] == "selfharm":
         return [d["SENSITIVE_MSG"]["selfharm"][tone]]
     text = str(question or "").strip(_JS_WS)
     first = fill(ctx.pick(d["OPEN"]["question"][tone], "q"), {"q": text}) if text \
-        else ctx.pick(d["OPEN"]["noquestion"][tone], "noq")
+        else "" if withheld else ctx.pick(d["OPEN"]["noquestion"][tone], "noq")
     rest = []
     if q["sensitive"]:
         rest.append(d["SENSITIVE_MSG"][q["sensitive"]][tone])
@@ -344,13 +345,14 @@ def questions(ctx: Ctx) -> list[str]:
     return out
 
 
-def interpret(reading: dict, question="", tone: str = DEFAULT_TONE) -> dict:
-    """The full interpretation; reading as returned by engine.draw_reading (or the same shape)."""
+def interpret(reading: dict, question="", tone: str = DEFAULT_TONE, question_withheld: bool = False) -> dict:
+    """The full interpretation; reading as returned by engine.draw_reading (or the same shape). question_withheld:
+    a shared link without its question; the introduction then leaves the question line out."""
     t = tone if tone in D()["TONES"] else DEFAULT_TONE
     ctx = Ctx(reading, question, t)
     selfharm = ctx.q["sensitive"] == "selfharm"
     out = {"tone": t, "topic": ctx.q["topic"], "decision": ctx.q["decision"], "sensitive": ctx.q["sensitive"],
-           "intro": intro(ctx, question), "summary": summary(ctx),
+           "intro": intro(ctx, question, bool(question_withheld)), "summary": summary(ctx),
            "positions": [] if selfharm else [position_text(ctx, i) for i in range(len(ctx.cards))]}
     out.update({"threads": threads(ctx), "closing": closing(ctx), "questions": questions(ctx),
                 "note": "" if selfharm else D()["CLOSE"]["note"][t]})

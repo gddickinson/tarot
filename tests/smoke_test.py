@@ -62,6 +62,7 @@ def main():
 
             def page_for(width, motion="no-preference"):
                 pg = browser.new_page(viewport={"width": width, "height": 900}, reduced_motion=motion,
+                                      permissions=["clipboard-read", "clipboard-write"],
                                       extra_http_headers={"X-Forwarded-For": "192.168.1.20"} if a.as_remote else None)
                 pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
                 pg.on("pageerror", lambda e: errors.append(str(e)))
@@ -123,6 +124,25 @@ def main():
                       and all(t.strip() and "undefined" not in t for t in texts) and pg.locator("#b-copy").count() == 1,
                       f"{width}px written reading: passages={len(texts)} threads={threads} (before reveal {early}) "
                       f"questions={asks}")
+                # Copy link: the question stays out unless "Include my question in the link" is ticked
+                ticked = pg.is_checked("#share-q")
+                pg.click("#b-share")
+                plain = pg.evaluate("navigator.clipboard.readText()")
+                pg.check("#share-q")
+                pg.click("#b-share")
+                with_q = pg.evaluate("navigator.clipboard.readText()")
+                pg.uncheck("#share-q")
+                check(not ticked and "q=" not in plain.split("#", 1)[1].replace("qw=", "") and "qw=1" in plain
+                      and "q=Will+the+tests+pass%3F" in with_q,
+                      f"{width}px share link omits the question by default, includes it when ticked")
+                other = page_for(width, motion)
+                other.goto(plain)
+                other.wait_for_selector("#interp .reading-text", timeout=8000)
+                same_plain = other.locator("#interp .reading-text").all_inner_texts() == texts
+                hidden = "Will the tests pass" not in other.inner_text("#interp") and \
+                    "No question" not in other.inner_text("#interp")
+                other.close()
+                check(same_plain and hidden, f"{width}px link without the question: same passages, no question line")
                 if a.shots and width == 1280:
                     pg.screenshot(path=str(ROOT / "docs" / "img" / "reading_celtic.jpg"), quality=82)
                     pg.add_style_tag(content="header { position: static !important; }")  # no sticky bar over the shot

@@ -57,8 +57,10 @@ test('spreads: positions and Waite\'s Celtic Cross labels', () => {
   assert.equal(SPREADS.single.positions.length, 1);
   assert.equal(SPREADS.four.positions.length, 4);
   assert.equal(CELTIC_POSITIONS.length, 10);
-  assert.equal(SPREADS.celtic.positions[0], 'What covers him');
+  assert.equal(SPREADS.celtic.positions[0], 'What covers you', 'the site speaks to the reader');
   assert.equal(SPREADS.celtic.positions[9], 'What will come');
+  assert.equal(SPREADS.celtic.waite[0], 'What covers him', "Waite's 1910 wording kept apart");
+  assert.equal(SPREADS.celtic.waite.length, 10);
 });
 
 test('drawReading: deterministic, distinct cards, one per position', () => {

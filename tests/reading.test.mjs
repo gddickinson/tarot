@@ -3,7 +3,7 @@
 // for any card, orientation, position, spread and tone.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CARDS, SPREADS, drawReading } from '../static/engine.js';
+import { CARDS, SPREADS, drawReading, shareQuery, queryToArgs } from '../static/engine.js';
 import { CARD_TEXT, MAJOR_ELEMENT } from '../static/reading_cards.js';
 import { POSITIONS } from '../static/reading_positions.js';
 import { TONES } from '../static/reading_phrases.js';
@@ -18,10 +18,16 @@ function spread(name, list, { seed = 1, significator = null, reversals = true } 
 }
 const BAD = /undefined|\bnull\b|NaN|\{|\}| {2}| [,.;:]|\.\.|\n{3}/;
 const MEDICAL = /illness|sickness|disease|infirm|diagnos|\bcure|\bheal(ing|s|ed)?\b/i;
+// The reading speaks to the reader: no third-person pronouns for the querent in engine-written text (quoted text,
+// the question and Waite's recurrence table, is left out of the check).
+const GENDERED = /\b(him|his|himself|her|hers|herself)\b/i;
 function checkText(t, where) {
   assert.ok(t && typeof t === 'string', where);
   assert.doesNotMatch(t, BAD, `${where}: ${t}`);
   assert.doesNotMatch(t, MEDICAL, `${where}: ${t}`);
+  const own = t.replace(/“[^”]*”/g, '“”');
+  const m = own.match(GENDERED);
+  assert.ok(!m, `${where}: "${m && own.slice(Math.max(0, m.index - 60), m.index + 20)}"`);
 }
 
 test('every card has glosses, themes, tenor and a reversal mode; no colons in glosses', () => {
@@ -63,6 +69,43 @@ test('no undefined or placeholder text: 78 cards x 2 orientations x every positi
     }
   }
   assert.ok(n > 8000, `${n} readings checked`);
+});
+
+test('second person throughout: position headings are not Waite\'s "him/his" wording', () => {
+  const it = interpret(drawReading({ seed: 4, spread: 'celtic', significator: 'cu13' }), { tone: 'traditional' });
+  assert.deepEqual(it.positions.map(p => p.pos), ['What covers you', 'What crosses you', 'What crowns you', 'Beneath you',
+    'Behind you', 'Before you', 'Yourself', 'Your house', 'Your hopes or fears', 'What will come']);
+  assert.equal(SPREADS.celtic.waite[0], 'What covers him', "Waite's names kept apart, for the detail");
+  // a reading saved with Waite's names (older journal entries) still gets second-person headings
+  const old = drawReading({ seed: 4, spread: 'celtic' });
+  old.cards.forEach((c, i) => { c.pos = SPREADS.celtic.waite[i]; });
+  assert.ok(interpret(old).positions.every(p => !GENDERED.test(p.heading)));
+});
+
+test('a reversal with a different meaning gets no empty "other face" clause', () => {
+  const t = interpret(spread('three', ['-cu06', '-cu08', '-pe10']), { tone: 'modern' }).text;
+  assert.doesNotMatch(t, /other face|reversed sense|other meaning/);
+  assert.match(t, /looking forward instead/);
+});
+
+test('share links leave the question out unless asked; the link still writes the same text', () => {
+  const r = drawReading({ seed: 21, spread: 'three' });
+  const plain = new URLSearchParams(shareQuery(r, 'night', { tone: 'brief', question: 'Will he call?' }));
+  assert.equal(plain.get('q'), null);
+  assert.equal(plain.get('qw'), '1');
+  assert.equal(plain.get('tone'), 'brief');
+  const withQ = new URLSearchParams(shareQuery(r, 'night', { tone: 'modern', question: ' Will he call? ', includeQuestion: true }));
+  assert.equal(withQ.get('q'), 'Will he call?');
+  assert.equal(withQ.get('qw'), null);
+  assert.equal(new URLSearchParams(shareQuery(r, 'night', {})).get('qw'), null, 'no question, nothing to withhold');
+  const args = queryToArgs(Object.fromEntries(plain));
+  assert.deepEqual(drawReading(args).cards, r.cards, 'the same cards');
+  const shared = interpret(drawReading(args), { tone: 'brief', questionWithheld: true });
+  assert.deepEqual(interpret(drawReading(args), { tone: 'brief', questionWithheld: true }), shared, 'deterministic');
+  assert.ok(!shared.text.includes('Will he call') && !/No question/.test(shared.text), 'no question line at all');
+  assert.match(interpret(drawReading(args), { tone: 'brief' }).text, /No question: a general reading/);
+  assert.match(interpret(r, { question: 'Will he call?', questionWithheld: true }).text, /Will he call\?/,
+    'a question typed by the receiver is shown');
 });
 
 test('the same seed gives the same text; different seeds vary the wording', () => {

@@ -59,7 +59,7 @@ function positionText(ctx, i) {
   const reflect = REFLECTIVE.includes(ctx.q.sensitive) && role.time === 'future';
   const vars = { card: r, Card: cap(r), meaning: rev ? ct.rev : ct.up, short: role.short, Short: cap(role.short) };
   const parts = [fill(pick(ctx, reflect ? REFLECT[tone] : role.frames[tone], `pos${i}`), vars)];
-  if (rev) parts.push(pick(ctx, MODE[tone][ct.mode], `mode${i}`));
+  if (rev && MODE[tone][ct.mode].length) parts.push(pick(ctx, MODE[tone][ct.mode], `mode${i}`));
   const v = valence(c);
   if (ctx.spread === 'celtic') {
     if (i === 1 && v > 0) parts.push(EXTRAS.cross_kind[tone]);
@@ -71,15 +71,17 @@ function positionText(ctx, i) {
     const group = card.arcana === 'major' ? 'major' : card.suit;
     if (!ctx.usedTopic[group]) { parts.push(SUIT_TOPIC[group][ctx.topicKey]); ctx.usedTopic[group] = true; }
   }
-  return { i, pos: c.pos, id: c.id, reversed: rev,
-    heading: `${i + 1}. ${c.pos}: ${card.name}${rev ? ' (reversed)' : ''}`, text: parts.join(' ') };
+  const pos = SPREADS[ctx.spread].positions[i]; // not c.pos: older journal entries carry Waite's wording
+  return { i, pos, id: c.id, reversed: rev,
+    heading: `${i + 1}. ${pos}: ${card.name}${rev ? ' (reversed)' : ''}`, text: parts.join(' ') };
 }
 
-function intro(ctx, question) {
+function intro(ctx, question, withheld) {
   const { tone, q } = ctx;
   if (q.sensitive === 'selfharm') return [SENSITIVE_MSG.selfharm[tone]];
   const text = String(question || '').trim();
-  const first = text ? fill(pick(ctx, OPEN.question[tone], 'q'), { q: text }) : pick(ctx, OPEN.noquestion[tone], 'noq');
+  const first = text ? fill(pick(ctx, OPEN.question[tone], 'q'), { q: text })
+    : withheld ? '' : pick(ctx, OPEN.noquestion[tone], 'noq');
   const rest = [];
   const topic = { topic: TOPIC_NAMES[q.topic] };
   if (q.sensitive) rest.push(SENSITIVE_MSG[q.sensitive][tone]);
@@ -237,13 +239,15 @@ function questions(ctx) {
 }
 
 // The full interpretation. reading: {seed, spread, cards: [{pos, id, reversed}], significator, reversals}.
-export function interpret(reading, { question = '', tone = DEFAULT_TONE } = {}) {
+// questionWithheld: a shared link whose sender kept the question private; without a question the introduction then
+// says nothing about it (instead of "No question was asked").
+export function interpret(reading, { question = '', tone = DEFAULT_TONE, questionWithheld = false } = {}) {
   const t = TONES[tone] ? tone : DEFAULT_TONE;
   const ctx = makeCtx(reading, question, t);
   const selfharm = ctx.q.sensitive === 'selfharm';
   const out = {
     tone: t, topic: ctx.q.topic, decision: ctx.q.decision, sensitive: ctx.q.sensitive,
-    intro: intro(ctx, question), summary: summary(ctx),
+    intro: intro(ctx, question, !!questionWithheld), summary: summary(ctx),
     positions: selfharm ? [] : ctx.cards.map((c, i) => positionText(ctx, i)),
     threads: threads(ctx), closing: closing(ctx), questions: questions(ctx), note: selfharm ? '' : CLOSE.note[t],
   };

@@ -1,7 +1,7 @@
 // #/read : a reading at the table: choose a spread, shuffle, cut, deal, turn the cards over,
 // then read the written reading (reading_view.js), save it to the journal, copy it, or copy a link that reproduces it.
 import { $, $$, esc, route, app, list, api, isStatic } from './core.js';
-import { CARD, CARDS, SPREADS, SUITS, deckById, randomSeed, readingToQuery, queryToArgs,
+import { CARD, CARDS, SPREADS, SUITS, deckById, randomSeed, shareQuery, queryToArgs,
   drawQuery } from './engine.js';
 import { cardEl, prefs } from './widgets.js';
 import { TONES } from './reading_phrases.js';
@@ -15,7 +15,8 @@ let S = null; // state of the reading on screen
 // A reading and its written interpretation from the API (the Python server's /api/reading, or static_api.js on the
 // static site): the same arguments, question and tone give the same cards and text either way. A copy, because the
 // page marks cards as shown.
-const readingQuery = (args, question, tone) => `/reading?${drawQuery(args)}&${new URLSearchParams({ q: question, tone })}`;
+const readingQuery = (args, question, tone) => `/reading?${drawQuery(args)}&${new URLSearchParams({ q: question, tone,
+  qw: S.withheld && !question.trim() ? '1' : '0' })}`;
 async function draw(args) {
   const { interpretation, ...r } = structuredClone(await api(readingQuery(args, S.question, S.tone)));
   S.interp = interpretation;
@@ -35,7 +36,8 @@ async function rewrite() {
 
 route('read', async (args, q) => {
   const link = queryToArgs(q);
-  S = { question: String(q.q || '').slice(0, 300), tone: TONES[q.tone] ? q.tone : prefs.get('tone', 'modern') };
+  S = { question: String(q.q || '').slice(0, 300), tone: TONES[q.tone] ? q.tone : prefs.get('tone', 'modern'),
+    withheld: q.qw === '1', shareQ: false };
   if (!TONES[S.tone]) S.tone = 'modern';
   const shared = link ? await draw(link) : null;
   S = { ...S, interp: S.interp || null,
@@ -131,6 +133,7 @@ function redraw() {
     dealt: btn('b-reveal', 'Reveal all') + btn('b-new', 'New reading', true),
     revealed: btn('b-new', 'New reading') + btn('b-save', S.saved ? 'Saved' : 'Save to journal', true)
       + btn('b-copy', 'Copy reading', true) + btn('b-share', 'Copy link', true)
+      + `<label class="share-q"><input type="checkbox" id="share-q"${S.shareQ ? ' checked' : ''}> Include my question in the link</label>`
       + (S.ai && S.interp && !S.interp.sensitive ? btn('b-ai', 'Ask a local AI to elaborate', true) : ''),
   }[S.phase];
   setStatus({ ready: 'Time to choose a card.', shuffled: 'Shuffled. Cut the deck wherever you like.',
@@ -141,6 +144,7 @@ function redraw() {
   on('b-shuffle', doShuffle); on('b-cut', () => doCut(+$('#cut').value)); on('b-skipcut', () => doCut(null));
   on('b-deal', doDeal); on('b-reveal', revealAll); on('b-new', restart); on('b-save', save); on('b-share', share);
   on('b-copy', copyReading); on('b-ai', elaborate);
+  if ($('#share-q')) $('#share-q').onchange = e => { S.shareQ = e.target.checked; };
   if ($('#b-save') && S.saved) $('#b-save').disabled = true;
   $$('#layout .tcard').forEach(el => { el.onclick = () => turn(el); });
   renderInterp();
@@ -230,12 +234,11 @@ async function save() {
   } catch (e) { setStatus('Could not save: ' + e.message); }
 }
 
-// The link deals the same cards and, with the question and tone in it, writes the same text.
+// The link deals the same cards and writes the same text; the question goes in only if the box is ticked.
 async function share() {
-  const extra = new URLSearchParams({ tone: S.tone });
-  if (S.question.trim()) extra.set('q', S.question.trim());
-  const url = location.href.split('#')[0] + '#/read?' + readingToQuery(S.reading, S.deck) + '&' + extra;
-  const note = S.question.trim() ? ' (your question is part of the link)' : '';
+  const url = location.href.split('#')[0] + '#/read?' + shareQuery(S.reading, S.deck,
+    { tone: S.tone, question: S.question, includeQuestion: S.shareQ });
+  const note = S.question.trim() ? (S.shareQ ? ' (your question is part of the link)' : ' (without your question)') : '';
   try { await navigator.clipboard.writeText(url); setStatus(`Link copied: it opens this same reading${note}.`); }
   catch (e) { setStatus('Copy this link: ' + url); }
 }

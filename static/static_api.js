@@ -43,7 +43,8 @@ const GET = {
     const question = q.get('q') || '';
     if (question.length > 500) fail(422, 'question longer than 500 characters');
     const r = reading(q);
-    return { ...r, interpretation: interpret(r, { question, tone: q.get('tone') || 'modern' }) };
+    return { ...r, interpretation: interpret(r, { question, tone: q.get('tone') || 'modern',
+      questionWithheld: ['1', 'true'].includes(q.get('qw')) }) };
   },
   daily: q => {
     const date = q.get('date') || '';

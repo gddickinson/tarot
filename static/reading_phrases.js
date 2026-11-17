@@ -4,7 +4,7 @@
 export const TONES = {"traditional": "Traditional", "modern": "Modern", "brief": "Brief"};
 export const SPREAD_NAMES = {"single": "single card", "three": "three-card spread", "four": "four-card draw", "celtic": "Celtic Cross"};
 
-// What reversal does to a card (reading_cards.js "mode").
+// What reversal does to a card (reading_cards.js "mode"). "other": the reversed gloss already says it, no clause.
 export const MODE = {
 "traditional": {
  "blocked": ["Being reversed, its force is hindered.", "Reversed, it is obstructed and cannot work freely."],
@@ -12,17 +12,17 @@ export const MODE = {
  "delay": ["Being reversed, it comes late or in a lesser degree.", "Reversed, its effect is deferred."],
  "excess": ["Being reversed, its quality runs to excess.", "Reversed, it is carried too far."],
  "easing": ["Being reversed, its trouble is lessened.", "Reversed, the affliction it signifies is passing."],
- "other": ["Being reversed, it takes the other meaning Waite gives it."]},
+ "other": []},
 "modern": {
  "blocked": ["Reversed, its energy is blocked: it is there, but something stands in the way.", "Reversed, so this is held back rather than absent."],
  "inward": ["Reversed, it turns inward: this is happening inside you more than around you.", "Reversed, so look for this in your own thoughts and feelings first."],
  "delay": ["Reversed, it is slow to arrive: delayed rather than denied.", "Reversed, so give it time: what it promises comes later, or in a smaller measure."],
  "excess": ["Reversed, it shows too much of its own quality, a strength pushed until it becomes a problem.", "Reversed, so this is the card's quality overdone."],
  "easing": ["Reversed, its weight lifts: the hardest part is passing.", "Reversed, which softens it: the difficulty is easing."],
- "other": ["Reversed, the card shows its other face, which is why the meaning is so different from the upright card."]},
+ "other": []},
 "brief": {
  "blocked": ["Held back."], "inward": ["Turned inward."], "delay": ["Delayed."], "excess": ["Overdone."],
- "easing": ["Easing."], "other": ["Its reversed sense."]}
+ "easing": ["Easing."], "other": []}
 };
 
 export const OPEN = {

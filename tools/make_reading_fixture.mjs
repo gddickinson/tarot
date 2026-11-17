@@ -40,6 +40,10 @@ export function fixture() {
       k++;
     }
   }
+  for (const tone of TONES) { // shared links whose question was kept private
+    const reading = drawReading({ seed: 77, spread: 'celtic' });
+    cases.push({ reading, question: '', tone, withheld: true, out: interpret(reading, { tone, questionWithheld: true }) });
+  }
   BUILT.forEach(([spread, list, sig], i) => {
     for (const tone of TONES) {
       const reading = built(spread, list, sig, 1000 + i), question = QUESTIONS[(i + TONES.indexOf(tone)) % QUESTIONS.length];

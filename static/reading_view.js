@@ -2,7 +2,7 @@
 // and the summary, threads, reflection and questions once every card is face up. The text itself comes from the
 // reading engine (reading_engine.js, or the local app's /api/reading, which gives the same text).
 import { esc } from './core.js';
-import { CARD } from './engine.js';
+import { CARD, SPREADS } from './engine.js';
 import { cardEl, cardTags, meaningHTML, WAITE_CITE } from './widgets.js';
 
 const paras = list => list.map(p => `<p>${esc(p)}</p>`).join('');
@@ -17,7 +17,9 @@ export function readingHTML(it, reading, { complete = false, deck = 'night' } = 
       ${cardEl(p.id, { deck, reversed: p.reversed, up: true, still: true })}
       <div><h3 id="pos-${p.i}">${esc(p.heading)}</h3>
         <p class="reading-text">${esc(p.text)}</p>
-        <details><summary>Waite's own words ${cardTags(CARD[p.id])}</summary>${meaningHTML(p.id, p.reversed)}</details>
+        <details><summary>Waite's own words ${cardTags(CARD[p.id])}</summary>${meaningHTML(p.id, p.reversed)}
+          ${SPREADS[reading.spread].waite ? `<p class="small mute">Waite calls this position “${esc(SPREADS[reading.spread].waite[p.i])}”
+            (his 1910 wording).</p>` : ''}</details>
         <a class="small" href="#/card/${p.id}">More about this card</a></div></article>`).join('')}</div>` : ''}
     ${complete ? completeHTML(it) : it.positions.length ? '<p class="small mute">Turn every card over for the whole reading.</p>' : ''}`;
 }

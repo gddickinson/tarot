@@ -29,7 +29,7 @@ def test_classify_matches_js():
 
 @pytest.mark.parametrize("case", FIX["cases"], ids=lambda c: f"{c['reading']['spread']}-{c['reading']['seed']}-{c['tone']}")
 def test_interpretation_matches_js(case):
-    assert interpret(case["reading"], case["question"], case["tone"]) == case["out"]
+    assert interpret(case["reading"], case["question"], case["tone"], case.get("withheld", False)) == case["out"]
 
 
 def test_fixture_covers_every_spread_tone_and_sensitive_kind():
@@ -68,6 +68,9 @@ def test_reading_endpoint_is_draw_plus_interpretation():
     assert client.get("/api/reading", params={"seed": 1, "q": "x" * 501}).status_code == 422
     assert client.get("/api/reading?spread=nope").status_code == 400
     assert remote.get("/api/reading?seed=1").status_code == 200, "readings are not private, only the journal"
+    hidden = client.get("/api/reading?seed=5&spread=three&qw=1").json()["interpretation"]
+    open_ = client.get("/api/reading?seed=5&spread=three").json()["interpretation"]
+    assert hidden["intro"] == [] and open_["intro"][0].startswith(("No question", "Without a question"))
 
 
 def test_elaborate_is_off_by_default(monkeypatch):
