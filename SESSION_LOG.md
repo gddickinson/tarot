@@ -70,3 +70,11 @@
 - Tests: node 42 pass; pytest 101 pass (tests/, without the Playwright file); smoke_test.py all ok static and
   against the app (written reading, journal, share-link text, 390 px 0 overflow); scripts/screenshots.py --static
   and --base all ok. Screenshot docs/img/reading_text.jpg (full Celtic Cross reading).
+- Lead review: (1) the reading speaks in the second person: `SPREADS.celtic.positions` are now "What covers you" ...
+  "What will come" (JS and Python; Waite's names kept in `SPREADS.celtic.waite`, shown only in the "Waite's own
+  words" detail and About, labelled as his 1910 wording); headings come from SPREADS, so old journal entries with
+  Waite's names still read in the second person; node test: no him/his/her... in any engine-written text across the
+  8,424-reading sweep. Dropped the empty "other face" reversal clause (the reversed gloss already says it).
+  (2) Share links omit the question by default (`qw=1`; the shared reading leaves the question line out); a checkbox
+  "Include my question in the link" adds it. Node + smoke tests for both. Fixtures regenerated (engine, readings).
+  Tests: node 45 pass; pytest 106 pass; smoke_test.py all ok static and --base; screenshots.py ok.

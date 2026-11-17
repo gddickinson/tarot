@@ -42,7 +42,9 @@ When the cards are turned over, the page writes a reading below the table: an in
 and what it is about), a passage for each card as you turn it, and, once every card is face up, a summary, the
 "threads" that run through the spread, and a closing reflection with two or three questions to think about.
 
-- **Card x position.** Each position has a role (the Celtic Cross positions as Waite describes them: the atmosphere
+- **Card x position.** The reading speaks to you ("What covers you", "Your house"; Waite's 1910 names, "What covers
+  him" and so on, are shown under "Waite's own words"). Each position has a role (the Celtic Cross positions as Waite
+  describes them: the atmosphere
   that covers you, the obstacle that crosses you, the aim that crowns you, the foundation beneath, the influence
   passing and the one coming, yourself, your surroundings, your hopes or fears, what will come; past, present and
   future; a short story for the four-card draw), and the card's meaning is woven into that role. A reversed card is
@@ -55,8 +57,9 @@ and what it is about), a passage for each card as you turn it, and, once every c
 - **Your question** shapes the wording: its rough topic (love, work, money, a decision) is found from its words.
 - **Three styles**: *Traditional* (Waite-flavoured, "the Querent"), *Modern* (plain, "you") and *Brief*.
 - **Same link, same words.** The engine is rule-based and deterministic: the phrasing is chosen from the reading's
-  seed, so a shared link (which carries the question and style) gives exactly the same text, while different
-  readings do not read alike. **Copy reading** copies it as text; **Save to journal** keeps it with the reading
+  seed, so a shared link gives exactly the same text, while different readings do not read alike. The link carries
+  the style but not your question, unless you tick "Include my question in the link"; without it the shared reading
+  simply leaves the question line out. **Copy reading** copies it as text; **Save to journal** keeps it with the reading
   (and in the JSON and Markdown exports).
 - **What it will not do.** It is for entertainment. Questions about health, legal matters or money decisions get no
   forecast: the reading says tarot can't answer that and suggests a doctor, a lawyer or a financial adviser, and
