@@ -46,3 +46,27 @@
   null); `static/journal_api.js` sends other devices' journals to their own localStorage. Tests: pytest 42 pass
   (TestClient as 127.0.0.1 and as 192.168.1.20); smoke_test.py `--as-remote` (X-Forwarded-For through uvicorn
   --forwarded-allow-ips) all ok with nothing written to the data folder; static and local runs all ok.
+
+## 2026-11-16: written readings (branch web-interface)
+- George: "add realistic tarot card readings". New rule-based, deterministic reading engine in pure JS
+  (`static/reading_engine.js`, `reading_patterns.js` + text tables `reading_cards.js`, `reading_lore.js`,
+  `reading_positions.js`, `reading_phrases.js`), ported to Python (`web/reading.py`, `web/reading_patterns.py`,
+  `GET /api/reading`); `tools/make_reading_fixture.mjs` -> `tests/fixtures/readings.json` (50 readings) checked by
+  pytest. Position x card frames (Waite's Celtic Cross roles), reversal modes, whole-spread threads (majors, suits,
+  courts, Waite recurrences, numbers, reversals, Golden Dawn dignities, pairings, Celtic Cross relations), closing
+  reflection and questions; three tones; phrasing picked from the seed, so share links (now with `tone`, `q`) give
+  the same text. All interpretive text written for this site (THIRD_PARTY.md, About).
+- Safety: health / legal / money-decision questions: no forecast, pointer to a professional, reflective frames and
+  threads only; self-harm wording: no reading, a short supportive line (someone you trust, local helpline, emergency
+  number). Waite's recurrence readings about health ("dangerous illness", "infirmity") and dated ones are left out;
+  the old "Cards that recur" box that quoted them is gone.
+- UI: reading below the table, progressive (passages as cards turn, synthesis when all are up), Waite's words folded
+  under each card, Style of reading control, Copy reading; journal keeps tone + text (JSON, Markdown, journal page).
+- Optional, local app only: `run_web.py --ollama MODEL` -> "Ask a local AI to elaborate" (`POST /api/elaborate`,
+  loopback only, sensitive questions refused, off by default, mocked in tests). Checked once by hand with
+  qwen2.5:14b on this computer's Ollama.
+- Fix (separate commit, regression test first): the Four of Pentacles' reversed meaning was glued to its upright
+  text (Wikisource prints "Reversed;"), so the site said Waite gave none; extractor fixed, waite_pkt.js regenerated.
+- Tests: node 42 pass; pytest 101 pass (tests/, without the Playwright file); smoke_test.py all ok static and
+  against the app (written reading, journal, share-link text, 390 px 0 overflow); scripts/screenshots.py --static
+  and --base all ok. Screenshot docs/img/reading_text.jpg (full Celtic Cross reading).

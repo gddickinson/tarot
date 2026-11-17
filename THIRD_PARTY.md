@@ -28,6 +28,29 @@ meaning for the Two of Cups, and the site says so.
 
 The three-card positions (Past, Present, Future) are the common modern convention, not from Waite.
 
+## The written readings (reading engine)
+
+All the interpretive text of the reading engine (`static/reading_cards.js`, `reading_lore.js`,
+`reading_positions.js`, `reading_phrases.js`) was written for this site in November 2026 and is covered by the
+repository's MIT licence. Nothing in it is copied from modern tarot books. It is grounded in:
+
+- Waite's divinatory meanings (above): each card's short glosses summarise them in plain English, following the
+  reading his picture illustrates where he lists contradictory ones; Waite's recurrence table is quoted with
+  attribution (its health and dated readings are left out); his additional meaning of the Seven of Cups reversed
+  is cited in one pairing.
+- Waite's Part III §7 for the Celtic Cross positions, paraphrased (including his notes that a favourable crossing
+  card means the opposition is not serious, that the tenth card deserves the reader's closest attention, and that a
+  court card in tenth place puts the matter in the hands of the person it represents).
+- The Hermetic Order of the Golden Dawn's attributions, which date from the Order's "Book T" papers of the 1890s
+  (later published by Israel Regardie, *The Golden Dawn*, 1937-40; no text from either is quoted, only the
+  correspondences themselves are used): the suits' elements, the trumps' elements by their zodiac sign or
+  mother letter (the planetary trumps take no part in dignities), and the rule of elemental dignities (contrary
+  elements weaken, fire/water and air/earth; the same element strengthens; other pairs are friendly).
+- The commonly taught meanings of the pip numbers (Ace to Ten) and court ranks, phrased here in the site's own words.
+
+The four-card draw is read as a short story in order (opening, development, turn, outcome): a convention of this
+site, not of Waite or the original page.
+
 ## Card pictures
 
 The cards in `cards/` (78 faces and `back.svg`) are original art made for this repository in November 2026: SVG
