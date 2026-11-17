@@ -16,6 +16,8 @@ from .engine import CARD, SPREADS, deck_by_id
 FORMAT = "tarot-journal"
 VERSION = 1
 MAX_ENTRIES = 5000
+READING_TONES = ["traditional", "modern", "brief"]  # journal_model.js READING_TONES
+READING_MAX = 20000
 ROOT = Path(__file__).resolve().parent.parent
 _lock = threading.Lock()
 
@@ -81,6 +83,8 @@ def clean_entry(e) -> dict | None:
         "cutAt": cut_at if isinstance(cut_at, int) and not isinstance(cut_at, bool) else None,
         "reversals": e.get("reversals") is not False, "significator": sig if sig in CARD else None,
         "question": _text(e.get("question"), 500), "note": _text(e.get("note"), 5000), "cards": cards,
+        "tone": e.get("tone") if e.get("tone") in READING_TONES else None,
+        "reading": _text(e.get("reading"), READING_MAX),
     }
 
 

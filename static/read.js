@@ -1,27 +1,49 @@
 // #/read : a reading at the table: choose a spread, shuffle, cut, deal, turn the cards over,
-// then read Waite's meanings, save to the journal or copy a link that reproduces the reading.
-import { $, $$, esc, route, app, list, api } from './core.js';
-import { CARD, CARDS, SPREADS, SUITS, RANK_PLURAL, deckById, randomSeed, readingToQuery, queryToArgs,
+// then read the written reading (reading_view.js), save it to the journal, copy it, or copy a link that reproduces it.
+import { $, $$, esc, route, app, list, api, isStatic } from './core.js';
+import { CARD, CARDS, SPREADS, SUITS, deckById, randomSeed, readingToQuery, queryToArgs,
   drawQuery } from './engine.js';
-import { cardEl, cardTags, meaningHTML, cite, prefs } from './widgets.js';
+import { cardEl, prefs } from './widgets.js';
+import { TONES } from './reading_phrases.js';
+import { readingHTML } from './reading_view.js';
 import { makeEntry } from './journal_model.js';
 import { journalApi, inBrowser } from './journal_api.js';
 import { packHTML, shuffleAnim, cutAnim, dealAnim, flip } from './anim.js';
 
 let S = null; // state of the reading on screen
 
-// A reading from the API (the Python server's /api/draw, or static_api.js on the static site): the same arguments
-// give the same cards either way. A copy, because the page marks cards as shown.
-const draw = async args => structuredClone(await api('/draw?' + drawQuery(args)));
+// A reading and its written interpretation from the API (the Python server's /api/reading, or static_api.js on the
+// static site): the same arguments, question and tone give the same cards and text either way. A copy, because the
+// page marks cards as shown.
+const readingQuery = (args, question, tone) => `/reading?${drawQuery(args)}&${new URLSearchParams({ q: question, tone })}`;
+async function draw(args) {
+  const { interpretation, ...r } = structuredClone(await api(readingQuery(args, S.question, S.tone)));
+  S.interp = interpretation;
+  return r;
+}
+// The question or tone changed: the same cards, the text written again.
+async function rewrite() {
+  if (!S.reading) return;
+  const r = S.reading;
+  try {
+    S.interp = (await api(readingQuery({ seed: r.seed, spread: r.spread, cutAt: r.cutAt, reversals: r.reversals,
+      significator: r.significator }, S.question, S.tone))).interpretation;
+    S.saved = false; S.aiText = null;
+    redraw();
+  } catch (e) { setStatus('Could not write the reading: ' + e.message); }
+}
 
 route('read', async (args, q) => {
-  const link = queryToArgs(q), shared = link ? await draw(link) : null;
-  S = {
+  const link = queryToArgs(q);
+  S = { question: String(q.q || '').slice(0, 300), tone: TONES[q.tone] ? q.tone : prefs.get('tone', 'modern') };
+  if (!TONES[S.tone]) S.tone = 'modern';
+  const shared = link ? await draw(link) : null;
+  S = { ...S, interp: S.interp || null,
     deck: 'night',
     spread: SPREADS[q.spread] ? q.spread : 'three',
     reversals: q.rev ? q.rev !== '0' : prefs.get('rev', '1') !== '0',
     significator: shared ? shared.significator : null,
-    question: '', seed: shared ? shared.seed : randomSeed(), reading: shared, saved: false, phase: 'ready',
+    seed: shared ? shared.seed : randomSeed(), reading: shared, saved: false, phase: 'ready',
   };
   app().innerHTML = `
     <div class="hero"><p class="kicker">A reading</p><h1 class="glow">${shared ? 'A shared reading' : 'Time to choose a card'}</h1>
@@ -30,6 +52,9 @@ route('read', async (args, q) => {
       <div class="row">
         <div><label for="question">Your question (optional)</label><input id="question" maxlength="300" placeholder="What is on your mind?"></div>
       </div>
+      <label id="tone-l">Style of reading</label>
+      <div class="seg" role="group" aria-labelledby="tone-l" id="tones">${list(Object.entries(TONES),
+        ([k, t]) => `<button type="button" data-tone="${k}" aria-pressed="false">${t}</button>`)}</div>
       <label id="spread-l">Spread</label>
       <div class="seg" role="group" aria-labelledby="spread-l" id="spreads">${list(Object.entries(SPREADS),
         ([k, s]) => `<button type="button" data-sp="${k}" aria-pressed="false">${s.label}</button>`)}</div>
@@ -51,19 +76,34 @@ route('read', async (args, q) => {
       <div class="controls" id="controls"></div>
       <div id="layout"></div>
     </section>
-    <section id="interp" aria-live="polite"></section>`;
+    <section id="interp" aria-labelledby="reading-h"></section>`;
   $('#rev').checked = S.reversals;
   $('#sig').value = S.significator || '';
   $('#rev').onchange = e => { S.reversals = e.target.checked; prefs.set('rev', S.reversals ? '1' : '0'); restart(); };
   $('#sig').onchange = e => { S.significator = e.target.value || null; restart(); };
+  $('#question').value = S.question;
   $('#question').oninput = e => { S.question = e.target.value; };
+  $('#question').onchange = rewrite;
+  $$('#tones button').forEach(b => {
+    b.onclick = () => { S.tone = b.dataset.tone; prefs.set('tone', S.tone); toneButtons(); rewrite(); };
+  });
+  toneButtons();
+  // the optional local-AI button: only in the local app started with --ollama MODEL (web/elaborate.py)
+  if (!isStatic()) {
+    api('/info', { fresh: true }).then(i => { S.ai = i.elaborate || null; if (S.phase === 'revealed') redraw(); })
+      .catch(() => { S.ai = null; });
+  }
   $$('#spreads button').forEach(b => { b.onclick = () => { S.spread = b.dataset.sp; restart(); }; });
   $('#cut').oninput = e => { $('#cutv').textContent = e.target.value; };
   if (shared) { S.phase = 'revealed'; redraw(); } else restart();
 });
 
+function toneButtons() {
+  $$('#tones button').forEach(b => { const on = b.dataset.tone === S.tone; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+
 function restart() {
-  S.seed = randomSeed(); S.reading = null; S.saved = false; S.phase = 'ready';
+  S.seed = randomSeed(); S.reading = null; S.interp = null; S.aiText = null; S.saved = false; S.phase = 'ready';
   redraw();
 }
 
@@ -90,7 +130,8 @@ function redraw() {
     cut: btn('b-deal', 'Deal'),
     dealt: btn('b-reveal', 'Reveal all') + btn('b-new', 'New reading', true),
     revealed: btn('b-new', 'New reading') + btn('b-save', S.saved ? 'Saved' : 'Save to journal', true)
-      + btn('b-share', 'Copy link', true),
+      + btn('b-copy', 'Copy reading', true) + btn('b-share', 'Copy link', true)
+      + (S.ai && S.interp && !S.interp.sensitive ? btn('b-ai', 'Ask a local AI to elaborate', true) : ''),
   }[S.phase];
   setStatus({ ready: 'Time to choose a card.', shuffled: 'Shuffled. Cut the deck wherever you like.',
     cut: 'Reading started! Deal the cards.', dealt: 'Turn the cards over one at a time, or reveal them all.',
@@ -99,6 +140,7 @@ function redraw() {
   const on = (id, fn) => { const b = $('#' + id); if (b) b.onclick = fn; };
   on('b-shuffle', doShuffle); on('b-cut', () => doCut(+$('#cut').value)); on('b-skipcut', () => doCut(null));
   on('b-deal', doDeal); on('b-reveal', revealAll); on('b-new', restart); on('b-save', save); on('b-share', share);
+  on('b-copy', copyReading); on('b-ai', elaborate);
   if ($('#b-save') && S.saved) $('#b-save').disabled = true;
   $$('#layout .tcard').forEach(el => { el.onclick = () => turn(el); });
   renderInterp();
@@ -171,27 +213,16 @@ function renderInterp() {
   const host = $('#interp');
   if (!host) return;
   const r = S.reading;
-  if (!r || !r.cards.some(c => c.shown)) { host.innerHTML = ''; return; }
-  const shown = r.cards.map((c, i) => [c, i]).filter(([c]) => c.shown);
-  const rec = S.phase === 'revealed' ? r.recurrences : [];
-  host.innerHTML = `<h2>The cards</h2>
-    ${S.question ? `<p class="quote">“${esc(S.question)}”</p>` : ''}
-    ${r.significator ? `<p>Significator: <a href="#/card/${r.significator}">${CARD[r.significator].name}</a></p>` : ''}
-    <div class="interp">${shown.map(([c, i]) => `<div class="panel it">
-      ${cardEl(c.id, { deck: S.deck, reversed: c.reversed, up: true, still: true })}
-      <div><h3>${i + 1}. ${esc(c.pos)}</h3>
-        <b class="serif" style="font-size:20px">${CARD[c.id].name}</b>
-        <span class="pill ${c.reversed ? 'rev' : 'up'}">${c.reversed ? 'reversed' : 'upright'}</span> ${cardTags(CARD[c.id])}
-        ${meaningHTML(c.id, c.reversed)}
-        <a class="small" href="#/card/${c.id}">More about this card</a></div></div>`).join('')}</div>
-    ${rec.length ? `<h2>Cards that recur</h2><div class="callout">${rec.map(x => `<p class="quote">${x.count} ${RANK_PLURAL[x.rank]}
-      ${x.mode === 'reversed' ? 'reversed' : 'upright'}: <b>${esc(x.meaning)}</b></p>`).join('')}
-      <p class="src">From Waite, Part III §5, "The Recurrence of Cards in Dealing" (upright and reversed counted separately).</p></div>` : ''}
-    ${cite()}`;
+  if (!r || !S.interp || !r.cards.some(c => c.shown)) { host.innerHTML = ''; return; }
+  host.innerHTML = readingHTML(S.interp, r, { complete: S.phase === 'revealed', deck: S.deck })
+    + (S.aiText ? `<section class="panel ai-note" aria-labelledby="ai-h"><h3 id="ai-h">A local AI's elaboration</h3>
+      <p class="small mute">Written by ${esc(S.aiText.model)} through Ollama on this computer, not by the reading engine. For
+      entertainment, like the rest.</p>${S.aiText.text.split(/\n+/).map(t => `<p>${esc(t)}</p>`).join('')}</section>` : '');
 }
 
 async function save() {
-  const entry = makeEntry(S.reading, { deck: S.deck, question: S.question });
+  const entry = makeEntry(S.reading, { deck: S.deck, question: S.question, tone: S.interp && S.interp.tone,
+    text: S.interp ? S.interp.text : '' });
   try {
     await journalApi('/journal/add', { entry });
     S.saved = true; $('#b-save').textContent = 'Saved'; $('#b-save').disabled = true;
@@ -199,8 +230,32 @@ async function save() {
   } catch (e) { setStatus('Could not save: ' + e.message); }
 }
 
+// The link deals the same cards and, with the question and tone in it, writes the same text.
 async function share() {
-  const url = location.href.split('#')[0] + '#/read?' + readingToQuery(S.reading, S.deck);
-  try { await navigator.clipboard.writeText(url); setStatus('Link copied: it opens this same reading.'); }
+  const extra = new URLSearchParams({ tone: S.tone });
+  if (S.question.trim()) extra.set('q', S.question.trim());
+  const url = location.href.split('#')[0] + '#/read?' + readingToQuery(S.reading, S.deck) + '&' + extra;
+  const note = S.question.trim() ? ' (your question is part of the link)' : '';
+  try { await navigator.clipboard.writeText(url); setStatus(`Link copied: it opens this same reading${note}.`); }
   catch (e) { setStatus('Copy this link: ' + url); }
+}
+
+async function copyReading() {
+  if (!S.interp) return;
+  try { await navigator.clipboard.writeText(S.interp.text); setStatus('Reading copied as text.'); }
+  catch (e) { setStatus('Could not copy: select the text of the reading instead.'); }
+}
+
+// Local app only, and only when started with --ollama MODEL: the server rebuilds this reading and asks the model.
+async function elaborate() {
+  const r = S.reading, b = $('#b-ai');
+  if (b) b.disabled = true;
+  setStatus('Asking the local AI (this can take a minute)...');
+  try {
+    S.aiText = await api('/elaborate', { body: { spread: r.spread, seed: r.seed, cut: r.cutAt, rev: r.reversals,
+      sig: r.significator, q: S.question, tone: S.tone } });
+    setStatus('The local AI has answered (below the reading).');
+    renderInterp();
+  } catch (e) { setStatus('The local AI could not answer: ' + e.message); }
+  if (b) b.disabled = false;
 }

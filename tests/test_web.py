@@ -188,7 +188,9 @@ def test_journal_round_trip(data_dir):
 def test_clean_entry_matches_js():
     cases = [entry(), entry(question="x" * 600, note=None, seed=-1), entry(cutAt=True, reversals=False, deck="rider"),
              entry(significator="pe13", date="2026-03-04T05:06:07.891+02:00"), {**entry(), "seed": "12"}, {**entry(), "seed": 2.7e10}, {**entry(), "spread": "nope"},
-             {**entry(), "cards": [{"id": "zz"}]}, {**entry(), "date": "never"}, {**entry(), "id": None}, None, []]
+             {**entry(), "cards": [{"id": "zz"}]}, {**entry(), "date": "never"}, {**entry(), "id": None}, None, [],
+             entry(tone="brief", reading="Tarot reading: x\n\nText"), entry(tone="loud", reading=None),
+             entry(reading="y" * 25000), entry(reading=12)]
     js = node(f"""const {{ cleanEntry }} = await import('./static/journal_model.js');
       console.log(JSON.stringify({json.dumps(cases)}.map(cleanEntry)));""")
     assert [J.clean_entry(c) for c in cases] == js

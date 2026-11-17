@@ -3,8 +3,12 @@ import { CARD, SPREADS, deckById } from './engine.js';
 
 export const JOURNAL_FORMAT = 'tarot-journal';
 export const JOURNAL_VERSION = 1;
+// Tones of the written reading (reading_phrases.js TONES); `reading` is its plain text, kept with the entry.
+export const READING_TONES = ['traditional', 'modern', 'brief'];
+export const READING_MAX = 20000;
 
-export function makeEntry(reading, { deck = 'night', question = '', note = '', date = new Date() } = {}) {
+export function makeEntry(reading, { deck = 'night', question = '', note = '', date = new Date(), tone = null,
+  text = '' } = {}) {
   const iso = (date instanceof Date ? date : new Date(date)).toISOString();
   return {
     id: `${iso.replace(/\D/g, '').slice(0, 14)}-${reading.seed.toString(36)}`,
@@ -12,6 +16,7 @@ export function makeEntry(reading, { deck = 'night', question = '', note = '', d
     reversals: !!reading.reversals, significator: reading.significator || null,
     question: String(question).slice(0, 500), note: String(note).slice(0, 5000),
     cards: reading.cards.map(({ pos, id, reversed }) => ({ pos, id, reversed: !!reversed })),
+    tone: READING_TONES.includes(tone) ? tone : null, reading: String(text).slice(0, READING_MAX),
   };
 }
 
@@ -26,6 +31,7 @@ export function cleanEntry(e) {
     seed: Number(e.seed) >>> 0, cutAt: Number.isInteger(e.cutAt) ? e.cutAt : null, reversals: e.reversals !== false,
     significator: CARD[e.significator] ? e.significator : null,
     question: String(e.question ?? '').slice(0, 500), note: String(e.note ?? '').slice(0, 5000), cards,
+    tone: READING_TONES.includes(e.tone) ? e.tone : null, reading: String(e.reading ?? '').slice(0, READING_MAX),
   };
 }
 
@@ -63,7 +69,8 @@ export function journalToMarkdown(entries) {
     if (e.significator) out.push('', `**Significator:** ${CARD[e.significator].name}`);
     out.push('');
     e.cards.forEach((c, i) => out.push(`${i + 1}. ${c.pos}: ${cardLabel(c)}`));
-    if (e.note) out.push('', e.note);
+    if (e.reading) out.push('', '### The reading', '', e.reading);
+    if (e.note) out.push('', '### Notes', '', e.note);
     out.push('');
   }
   return out.join('\n');

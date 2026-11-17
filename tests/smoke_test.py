@@ -108,18 +108,33 @@ def main():
                 pg.locator("#layout .slot.p1 .tcard").click(position={"x": 10, "y": 8})  # its top shows above card 2
                 pg.wait_for_timeout(1000)
                 one = pg.locator("#interp .it").count()
+                early = pg.locator("#interp .thread").count()  # threads wait until every card is up
                 pg.click("#b-reveal")
                 pg.wait_for_selector("#b-save", timeout=15000)
                 up = pg.locator("#layout .tcard.up").count()
                 sig_dealt = pg.locator("#layout .slot:not(.sig) .tcard[data-id=cu13]").count()
                 over = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
+                pg.wait_for_selector("#interp .thread", timeout=5000)
+                texts = pg.locator("#interp .reading-text").all_inner_texts()
+                threads = pg.locator("#interp .thread").count()
+                asks = pg.locator("#interp .questions li").count()
+                intro = pg.inner_text("#interp .reading-intro")
+                check(len(texts) == 10 and threads >= 2 and asks == 3 and early == 0 and "Will the tests pass?" in intro
+                      and all(t.strip() and "undefined" not in t for t in texts) and pg.locator("#b-copy").count() == 1,
+                      f"{width}px written reading: passages={len(texts)} threads={threads} (before reveal {early}) "
+                      f"questions={asks}")
                 if a.shots and width == 1280:
                     pg.screenshot(path=str(ROOT / "docs" / "img" / "reading_celtic.jpg"), quality=82)
+                    pg.add_style_tag(content="header { position: static !important; }")  # no sticky bar over the shot
+                    pg.locator("#interp").screenshot(path=str(ROOT / "docs" / "img" / "reading_text.jpg"), quality=72)
                 pg.click("#b-save")
                 pg.wait_for_selector("#b-save:disabled", timeout=5000)
                 pg.goto(base + "#/journal")
                 pg.wait_for_timeout(600)
                 saved = pg.locator(".jentry").count()
+                kept = pg.locator(".jentry .saved-reading").count()
+                check(kept == 1 and "Tarot reading: Celtic Cross" in pg.locator(".jentry .saved-reading pre").text_content(),
+                      f"{width}px the written reading is saved in the journal ({kept})")
                 if a.as_remote:  # kept in this browser, not in the app's file
                     stored = pg.evaluate("(localStorage.getItem('tarot.journal.v1') || '').length > 0")
                     check(stored and "kept in this browser" in pg.inner_text("#app"), f"{width}px remote journal in localStorage")
@@ -136,6 +151,9 @@ def main():
                 pg.wait_for_timeout(800)
                 again = [t.strip() for t in pg.locator("#layout .slot:not(.sig) .nm").all_text_contents()]
                 same = [t.split(". ", 1)[1].replace(" (rev.)", " (reversed)") for t in names] == again
+                pg.wait_for_selector("#interp .reading-text", timeout=5000)
+                same_text = pg.locator("#interp .reading-text").all_inner_texts() == texts
+                check(same_text, f"{width}px the link writes the same reading text")
                 check(same and not errors, f"{width}px share link reproduces the reading {'' if same else (names, again)}")
                 pg.close()
             browser.close()

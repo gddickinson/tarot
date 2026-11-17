@@ -57,3 +57,15 @@ test('markdown export lists every card with its position', () => {
   for (const c of e1.cards) assert.ok(md.includes(`${c.pos}: `));
   assert.ok(md.trimEnd().endsWith('fun'));
 });
+
+test('the written reading and its tone are kept, exported and cleaned', () => {
+  const e = makeEntry(r, { question: 'Q', tone: 'traditional', text: 'Tarot reading: Three cards\n\nThe cards...',
+    date: '2026-03-01T00:00:00Z' });
+  assert.equal(e.tone, 'traditional');
+  assert.match(journalToMarkdown([e]), /### The reading\n\nTarot reading: Three cards/);
+  assert.deepEqual(parseJournal(serialiseJournal([e])), [e]);
+  assert.equal(cleanEntry({ ...e, tone: 'shouty' }).tone, null);
+  assert.equal(cleanEntry({ ...e, reading: 'x'.repeat(30000) }).reading.length, 20000);
+  const old = cleanEntry({ ...e1, tone: undefined, reading: undefined });
+  assert.deepEqual([old.tone, old.reading], [null, ''], 'entries saved before readings existed still load');
+});

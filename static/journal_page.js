@@ -11,6 +11,14 @@ const post = (path, body) => journalApi('/journal/' + path, body);
 
 const when = iso => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
+// "Open reading" deals the same cards and writes the reading again in the saved tone, for the saved question.
+function openLink(e) {
+  const extra = new URLSearchParams();
+  if (e.tone) extra.set('tone', e.tone);
+  if (e.question) extra.set('q', e.question);
+  return '#/read?' + readingToQuery(e, e.deck) + (extra.toString() ? '&' + extra : '');
+}
+
 function entryHTML(e) {
   const d = deckById(e.deck);
   return `<article class="panel jentry" data-id="${esc(e.id)}">
@@ -19,9 +27,11 @@ function entryHTML(e) {
     ${e.significator ? `<p class="small">Significator: ${CARD[e.significator].name}</p>` : ''}
     <div class="thumbs">${e.cards.map((c, i) => `<figure>${thumb(c.id, d, { reversed: c.reversed })}
       <figcaption>${i + 1}. ${esc(CARD[c.id].name)}${c.reversed ? ' (rev.)' : ''}</figcaption></figure>`).join('')}</div>
+    ${e.reading ? `<details class="saved-reading"><summary>The reading${e.tone ? ` (${esc(e.tone)})` : ''}</summary>
+      <pre class="reading-plain">${esc(e.reading)}</pre></details>` : ''}
     <label for="n-${esc(e.id)}">Notes</label>
     <textarea id="n-${esc(e.id)}" data-note maxlength="5000" placeholder="What did you make of it?">${esc(e.note)}</textarea>
-    <a class="btn alt" href="#/read?${readingToQuery(e, e.deck)}">Open reading</a>
+    <a class="btn alt" href="${esc(openLink(e))}">Open reading</a>
     <button type="button" class="alt" data-del>Delete</button>
   </article>`;
 }

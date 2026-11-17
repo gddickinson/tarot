@@ -121,3 +121,15 @@ h1.glow { font-family:Georgia, "Times New Roman", serif; letter-spacing:.02em; }
   .table { padding:16px 8px 20px; }
 }
 @media (prefers-reduced-motion: reduce) { .tc-inner, .tc-face img, .cg img, .fan .tcard { transition:none !important; } }
+
+/* the written reading (reading_view.js) */
+.reading-intro p { font-family:Georgia, "Times New Roman", serif; font-size:17px; color:#e9e2cf; }
+.reading-text { margin:6px 0 8px; line-height:1.55; }
+.interp details summary { cursor:pointer; color:var(--mute); font-size:13px; }
+.interp details .tag { font-size:11px; }
+.threads { display:grid; gap:12px; }
+.thread h3 { margin:0 0 4px; font-size:16px; }
+.thread p { margin:0; line-height:1.55; }
+.questions li { margin:4px 0; }
+.saved-reading { margin:8px 0; }
+.reading-plain { white-space:pre-wrap; overflow-wrap:anywhere; font-family:inherit; font-size:14px; max-height:420px; overflow:auto; }
